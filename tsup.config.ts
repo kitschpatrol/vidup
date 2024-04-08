@@ -2,6 +2,7 @@ import { type Options, defineConfig } from 'tsup'
 
 const shared: Options = {
 	clean: true,
+	external: ['ora', 'bunnycdn-stream', 'ffmpeg-static', 'execa', 'fs-extra', 'hasha'],
 	format: 'esm',
 	minify: true,
 	platform: 'node',

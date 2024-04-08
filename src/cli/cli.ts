@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { sync } from '../lib/index'
 import log from '../lib/utilities/log'
 import prettyMilliseconds from 'pretty-ms'
 import yargs from 'yargs'
@@ -32,7 +33,7 @@ await yargsInstance
 						'Streaming service(s) to sync to. Only the Bunny.net streaming CDN is supported at this time.',
 					type: 'array',
 				})
-				.option('bunny-token', {
+				.option('bunny-key', {
 					default: undefined,
 					describe: 'Bunny stream CDN API access key',
 					type: 'string',
@@ -56,13 +57,30 @@ await yargsInstance
 				}),
 		// TODO checks as needed...
 		// .check((argv) => true)
-		({ bunnyLibrary, bunnyToken, directory, services, verbose }) => {
-			log.verbose = verbose ?? false
+		async ({ bunnyKey, bunnyLibrary, directory, services, verbose }) => {
+			log.verbose = verbose
 
 			log.info('Starting video synchronization...')
-			log.info(bunnyLibrary, bunnyToken, directory, services, verbose)
+			log.info(bunnyLibrary, bunnyKey, directory, services, verbose)
 
-			log.info(`Synchronized video in ${prettyMilliseconds(performance.now() - startTime)}.`)
+			const syncReport = await sync({
+				credentials: {
+					bunny: {
+						key: '**********************',
+						library: '************',
+					},
+				},
+				directory: '/Volumes/Working/Video/Bunny Originals',
+				dryRun: true,
+				services: 'bunny',
+				stripMetadata: true,
+				verbose,
+			})
+
+			console.log('----------------------------------')
+			console.log(`syncReport: ${JSON.stringify(syncReport, undefined, 2)}`)
+
+			log.info(`Synchronized video in ${prettyMilliseconds(performance.now() - startTime)}`)
 			process.exitCode = 0
 		},
 	)

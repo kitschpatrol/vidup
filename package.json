@@ -51,8 +51,17 @@
 		"release": "pnpm bumpp -r --commit 'Release: %s' --tag 'v%s' && pnpm -r publish --otp $(op read 'op://Personal/Npmjs/one-time password?attribute=otp')",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
+	"dependencies": {
+		"bunnycdn-stream": "^2.2.3",
+		"execa": "^8.0.1",
+		"ffmpeg-static": "^5.2.0",
+		"fs-extra": "^11.2.0",
+		"hasha": "^6.0.0",
+		"ora": "^8.0.1"
+	},
 	"devDependencies": {
 		"@kitschpatrol/shared-config": "^4.6.1",
+		"@types/fs-extra": "^11.0.4",
 		"@types/node": "^20.12.5",
 		"@types/yargs": "^17.0.32",
 		"bumpp": "^9.4.0",
