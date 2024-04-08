@@ -24,18 +24,19 @@ await yargsInstance
 					describe: 'The path to the local directory of video files to sync.',
 					type: 'string',
 				})
-				.option('services', {
+				.option('service', {
 					alias: 's',
-					// TODO mux, cloudflare, youtube...
 					choices: ['bunny'] as const,
 					default: 'bunny',
+					demandOption: true,
 					describe:
 						'Streaming service(s) to sync to. Only the Bunny.net streaming CDN is supported at this time.',
-					type: 'array',
+					type: 'string',
 				})
-				.option('bunny-key', {
+				.option('key', {
 					default: undefined,
-					describe: 'Bunny stream CDN API access key',
+					demandOption: true,
+					describe: 'Streaming service API access key',
 					type: 'string',
 				})
 				.option('strip-metadata', {
@@ -44,10 +45,22 @@ await yargsInstance
 						'Remove all metadata from the video files before uploading them to the streaming service.',
 					type: 'boolean',
 				})
-				.option('bunny-library', {
+				.option('dry-run', {
+					default: false,
+					describe:
+						'Perform a dry run without making any changes. Useful for testing and debugging.',
+					type: 'boolean',
+				})
+				.option('library', {
 					default: undefined,
-					describe: 'Bunny stream CDN library ID',
+					demandOption: true,
+					describe: 'Streaming service library ID',
 					type: 'string',
+				})
+				.option('json', {
+					default: false,
+					describe: 'Output the sync report as JSON',
+					type: 'boolean',
 				})
 				.option('verbose', {
 					default: false,
@@ -55,30 +68,35 @@ await yargsInstance
 						'Enable verbose logging. All verbose logs and prefixed with their log level and are printed to `stderr` for ease of redirection.',
 					type: 'boolean',
 				}),
-		// TODO checks as needed...
-		// .check((argv) => true)
-		async ({ bunnyKey, bunnyLibrary, directory, services, verbose }) => {
+		async ({ directory, dryRun, json, key, library, service, stripMetadata, verbose }) => {
 			log.verbose = verbose
 
 			log.info('Starting video synchronization...')
-			log.info(bunnyLibrary, bunnyKey, directory, services, verbose)
+
+			if (dryRun) {
+				log.warn(`Dry run enabled, not making any changes`)
+			}
 
 			const syncReport = await sync({
 				credentials: {
-					bunny: {
-						key: '**********************',
-						library: '************',
-					},
+					key,
+					library,
 				},
-				directory: '/Volumes/Working/Video/Bunny Originals',
-				dryRun: true,
-				services: 'bunny',
-				stripMetadata: true,
+				directory,
+				dryRun,
+				service: service as 'bunny',
+				stripMetadata,
 				verbose,
 			})
 
-			console.log('----------------------------------')
-			console.log(`syncReport: ${JSON.stringify(syncReport, undefined, 2)}`)
+			if (json) {
+				process.stdout.write(JSON.stringify(syncReport, undefined, 2))
+				process.stdout.write('\n')
+			} else {
+				for (const entry of syncReport) {
+					process.stdout.write(`${entry.action}: ${entry.localFile}\n`)
+				}
+			}
 
 			log.info(`Synchronized video in ${prettyMilliseconds(performance.now() - startTime)}`)
 			process.exitCode = 0

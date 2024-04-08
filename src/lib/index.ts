@@ -8,7 +8,13 @@ import path from 'node:path'
 
 const vidupStateFileName = '.vidup-state.json'
 
+// TODO key state to service
+// type SyncState = {
+// 	['bunny']: VideoState[]
+// }
+
 type SyncState = VideoState[]
+
 type VideoState = {
 	filename: string
 	localHash: string
@@ -17,14 +23,13 @@ type VideoState = {
 
 export type SyncOptions = {
 	credentials: {
-		bunny: {
-			key: string
-			library: string
-		}
+		key: string
+		library: string
 	}
 	directory: string
 	dryRun: boolean
-	services: 'bunny'
+	service: 'bunny'
+	// Service: 'bunny' | 'cloudflare' | 'mux'
 	stripMetadata?: boolean
 	verbose: boolean
 }
@@ -41,7 +46,7 @@ export type SyncReportEntry = {
 	action: 'Create' | 'Delete' | 'Unchanged' | 'Update'
 	localFile?: string
 	remoteId: string
-	remoteService: string
+	stripMetadata: boolean
 }
 
 async function getLocalFileList(directory: string): Promise<string[]> {
@@ -91,10 +96,6 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 
 	const syncReport: SyncReport = []
 
-	if (options.dryRun) {
-		log.warn(`Dry run enabled, not making any changes`)
-	}
-
 	const videoFiles = await getLocalFileList(options.directory)
 
 	log.info(`Found ${videoFiles.length} video files in directory "${options.directory}"`)
@@ -134,13 +135,13 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 
 	// Get remote files and figure out the sync plan
 	const stream = new BunnyCdnStream({
-		apiKey: options.credentials.bunny.key,
-		videoLibrary: options.credentials.bunny.library,
+		apiKey: options.credentials.key,
+		videoLibrary: options.credentials.library,
 	})
 	const remoteVideos = await stream.listAllVideos()
 
 	log.info(
-		`Found ${remoteVideos.length} video files on ${options.services} remote streaming service`,
+		`Found ${remoteVideos.length} video files on ${options.service} remote streaming service`,
 	)
 
 	const remoteVideosInGoodStanding = remoteVideos.filter((video) => {
@@ -153,7 +154,7 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 			action: 'Unchanged',
 			localFile: video.title,
 			remoteId: video.guid,
-			remoteService: options.services,
+			stripMetadata: localVideosWithMetadata.includes(video.title),
 		})
 	}
 
@@ -167,7 +168,7 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 			action: 'Create',
 			localFile: video.filename,
 			remoteId: 'Not yet uploaded (Dry run)',
-			remoteService: options.services,
+			stripMetadata: localVideosWithMetadata.includes(video.filename),
 		})
 	}
 
@@ -182,7 +183,7 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 			action: 'Update',
 			localFile: video.title,
 			remoteId: 'Not yet uploaded (Dry run)',
-			remoteService: options.services,
+			stripMetadata: localVideosWithMetadata.includes(video.title),
 		})
 	}
 
@@ -195,43 +196,11 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 			action: 'Delete',
 			localFile: video.title,
 			remoteId: video.guid,
-			remoteService: options.services,
+			stripMetadata: localVideosWithMetadata.includes(video.title),
 		})
 	}
 
-	if (
-		remoteVideosToCreate.length === 0 &&
-		remoteVideosToUpdate.length === 0 &&
-		remoteVideosToDelete.length === 0
-	) {
-		log.info(`All ${videoFiles.length} videos are already in sync!`)
-	} else if (options.dryRun) {
-		log.info('Sync plan:')
-
-		log.info(`Remote videos in good standing: ${remoteVideosInGoodStanding.length}`)
-
-		if (options.stripMetadata) {
-			log.info(`Local videos with metadata to strip: ${localVideosWithMetadata.length}`)
-			for (const [index, video] of localVideosWithMetadata.entries()) {
-				log.info(`\t${index + 1}. ${video}`)
-			}
-		}
-
-		log.info(`Local videos to upload: ${remoteVideosToCreate.length}`)
-		for (const [index, video] of remoteVideosToCreate.entries()) {
-			log.info(`\t${index + 1}. ${video.filename}`)
-		}
-
-		log.info(`Remote videos to update: ${remoteVideosToUpdate.length}`)
-		for (const [index, video] of remoteVideosToUpdate.entries()) {
-			log.info(`\t${index + 1}. ${video.title}`)
-		}
-
-		log.info(`Remote videos to delete: ${remoteVideosToDelete.length}`)
-		for (const [index, video] of remoteVideosToDelete.entries()) {
-			log.info(`\t${index + 1}. ${video.title}`)
-		}
-	} else {
+	if (!options.dryRun) {
 		log.info(`Synchronizing...`)
 		// Create / Upload
 		for (const [index, localVideo] of remoteVideosToCreate.entries()) {
