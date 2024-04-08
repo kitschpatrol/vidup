@@ -1,0 +1,68 @@
+{
+	"name": "vidup",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "Synchronize a local directory of video files to a remote streaming service.",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kitschpatrol/vidup.git"
+	},
+	"homepage": "https://github.com/kitschpatrol/vidup",
+	"bugs": {
+		"url": "https://github.com/kitschpatrol/vidup/issues",
+		"email": "eric@ericmika.com"
+	},
+	"author": {
+		"name": "Eric Mika",
+		"email": "eric@ericmika.com",
+		"url": "https://ericmika.com"
+	},
+	"license": "MIT",
+	"packageManager": "pnpm@8.15.6+sha256.01c01eeb990e379b31ef19c03e9d06a14afa5250b82e81303f88721c99ff2e6f",
+	"engines": {
+		"node": ">=18.0.0",
+		"pnpm": ">=8.0.0"
+	},
+	"bin": {
+		"vidup": "bin/cli.js"
+	},
+	"main": "./dist/lib/index.js",
+	"module": "./dist/lib/index.js",
+	"types": "./dist/lib/index.d.ts",
+	"files": [
+		"bin/*",
+		"dist/*"
+	],
+	"keywords": [
+		"bunnycdn-stream",
+		"bunnycdn",
+		"cli",
+		"npm-package",
+		"sync",
+		"upload",
+		"video"
+	],
+	"scripts": {
+		"build": "tsup && tsc -p tsconfig.build.json",
+		"clean": "git clean -fdX",
+		"fix": "pnpm shared-config --fix",
+		"lint": "pnpm shared-config --lint",
+		"prepublishOnly": "pnpm run build",
+		"release": "pnpm bumpp -r --commit 'Release: %s' --tag 'v%s' && pnpm -r publish --otp $(op read 'op://Personal/Npmjs/one-time password?attribute=otp')",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"devDependencies": {
+		"@kitschpatrol/shared-config": "^4.6.1",
+		"@types/node": "^20.12.5",
+		"@types/yargs": "^17.0.32",
+		"bumpp": "^9.4.0",
+		"chalk": "^5.3.0",
+		"pretty-ms": "^9.0.0",
+		"tsup": "^8.0.2",
+		"typescript": "^5.4.4",
+		"yargs": "^17.7.2"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
