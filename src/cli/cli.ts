@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-import { type Service, sync } from '../lib/index'
-import log from '../lib/utilities/log'
+import { type VidupService, log, syncVideoInDirectory } from '../lib'
 import prettyMilliseconds from 'pretty-ms'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
@@ -77,14 +76,13 @@ await yargsInstance
 				log.warn(`Dry run enabled, not making any changes`)
 			}
 
-			const syncReport = await sync({
+			const syncReport = await syncVideoInDirectory(directory, {
 				credentials: {
 					key,
 					library,
 				},
-				directory,
 				dryRun,
-				service: service as Service,
+				service: service as VidupService,
 				stripMetadata,
 				verbose,
 			})

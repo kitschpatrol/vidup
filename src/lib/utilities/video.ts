@@ -30,7 +30,7 @@ export async function videoHasMetadata(filename: string): Promise<boolean> {
 	}
 }
 
-export async function stripMetadataFromVideo(filename: string): Promise<void> {
+export async function stripVideoMetadata(filename: string): Promise<void> {
 	if (ffmpegPath === null) {
 		throw new Error('ffmpeg-static failed to locate ffmpeg binary')
 	}
