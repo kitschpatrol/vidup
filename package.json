@@ -2,7 +2,7 @@
 	"name": "vidup",
 	"version": "0.1.0",
 	"type": "module",
-	"description": "Synchronize a local directory of video files to a remote streaming service.",
+	"description": "Synchronize a local directory of video files to remote streaming services.",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/kitschpatrol/vidup.git"
@@ -70,6 +70,7 @@
 		"pretty-ms": "^9.0.0",
 		"tsup": "^8.0.2",
 		"typescript": "^5.4.4",
+		"untildify": "^5.0.0",
 		"yargs": "^17.7.2"
 	},
 	"publishConfig": {

@@ -7,6 +7,7 @@ import { hash } from 'hasha'
 import { JSONFilePreset as lowdb } from 'lowdb/node'
 import { createReadStream } from 'node:fs'
 import path from 'node:path'
+import untildify from 'untildify'
 
 export type Service = 'bunny' | 'cloudflare' | 'mux'
 
@@ -23,7 +24,7 @@ type State = {
 }
 
 export type SyncReport = Array<{
-	action: 'Create' | 'Delete' | 'Unchanged' | 'Update'
+	action: 'Created' | 'Deleted' | 'Unchanged' | 'Updated'
 	localFile?: string
 	remoteId: string
 	stripMetadata: boolean
@@ -34,7 +35,6 @@ export type SyncOptions = {
 		key: string
 		library: string
 	}
-	directory?: string
 	dryRun?: boolean
 	service: Service
 	stripMetadata?: boolean
@@ -50,14 +50,14 @@ export async function syncVideoInDirectory(
 	directory: string,
 	options: SyncOptions,
 ): Promise<SyncReport> {
-	// Defaults
+	const resolvedDirectory = untildify(directory)
 	const { credentials, dryRun = false, service, stripMetadata = true, verbose = false } = options
 
 	const initialVerbosity = log.verbose
 	log.verbose = verbose
 
 	const syncReport: SyncReport = []
-	const videoFiles = await getVideosInDirectory(directory)
+	const videoFiles = await getVideosInDirectory(resolvedDirectory)
 
 	log.info(`Found ${videoFiles.length} video files in directory "${directory}"`)
 
@@ -70,13 +70,13 @@ export async function syncVideoInDirectory(
 		: []
 
 	// Create a state file if it doesn't exist
-	const state = await lowdb<State>(path.join(directory, '.vidup-state.json'), {
+	const state = await lowdb<State>(path.join(resolvedDirectory, '.vidup-state.json'), {
 		syncState: [],
 	})
 
 	// Remove state entries for files that no longer exist
 	state.data.syncState = state.data.syncState.filter((entry) =>
-		videoFiles.includes(path.join(directory, entry.filename)),
+		videoFiles.includes(path.join(resolvedDirectory, entry.filename)),
 	)
 
 	// Add state entries for new files
@@ -132,7 +132,7 @@ export async function syncVideoInDirectory(
 	// Sync report will be updated with GUIDs after upload
 	for (const video of remoteVideosToCreate) {
 		syncReport.push({
-			action: 'Create',
+			action: 'Created',
 			localFile: video.filename,
 			remoteId: 'Not yet uploaded (Dry run)',
 			stripMetadata: localVideosWithMetadata.includes(video.filename),
@@ -147,7 +147,7 @@ export async function syncVideoInDirectory(
 	// Sync report will be updated with GUIDs after upload
 	for (const video of remoteVideosToUpdate) {
 		syncReport.push({
-			action: 'Update',
+			action: 'Updated',
 			localFile: video.title,
 			remoteId: 'Not yet uploaded (Dry run)',
 			stripMetadata: localVideosWithMetadata.includes(video.title),
@@ -160,7 +160,7 @@ export async function syncVideoInDirectory(
 
 	for (const video of remoteVideosToDelete) {
 		syncReport.push({
-			action: 'Delete',
+			action: 'Deleted',
 			localFile: video.title,
 			remoteId: video.guid,
 			stripMetadata: localVideosWithMetadata.includes(video.title),
@@ -194,7 +194,7 @@ export async function syncVideoInDirectory(
 		for (const [index, localVideo] of remoteVideosToCreate.entries()) {
 			if (index === 0) log.info(`Uploading ${remoteVideosToCreate.length} new local videos...`)
 
-			const videoFile = createReadStream(path.join(directory, localVideo.filename))
+			const videoFile = createReadStream(path.join(resolvedDirectory, localVideo.filename))
 			const response = await log.infoSpin(
 				stream.createAndUploadVideo(videoFile, { title: localVideo.filename }),
 				`Uploading new video ${index + 1}/${remoteVideosToCreate.length}: ${localVideo.filename}`,
@@ -245,7 +245,7 @@ export async function syncVideoInDirectory(
 				throw new Error(`Failed to delete remote video before updating: ${remoteVideo.title}`)
 			}
 
-			const videoFile = createReadStream(path.join(directory, stateEntry.filename))
+			const videoFile = createReadStream(path.join(resolvedDirectory, stateEntry.filename))
 			const createResponse = await log.infoSpin(
 				stream.createAndUploadVideo(videoFile, { title: stateEntry.filename }),
 				`Updating remote video ${index + 1}/${remoteVideosToUpdate.length}: ${remoteVideo.title}`,

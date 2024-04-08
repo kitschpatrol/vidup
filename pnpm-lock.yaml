@@ -55,6 +55,9 @@ devDependencies:
   typescript:
     specifier: ^5.4.4
     version: 5.4.4
+  untildify:
+    specifier: ^5.0.0
+    version: 5.0.0
   yargs:
     specifier: ^17.7.2
     version: 17.7.2

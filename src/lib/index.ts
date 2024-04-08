@@ -1,5 +1,3 @@
-export { type StripOptions as VidupStripOptions, stripVideoMetadataInDirectory } from './strip'
-
 export {
 	type Service as VidupService,
 	type SyncOptions as VidupSyncOptions,
