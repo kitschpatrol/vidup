@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { sync } from '../lib/index'
+import { type Service, sync } from '../lib/index'
 import log from '../lib/utilities/log'
 import prettyMilliseconds from 'pretty-ms'
 import yargs from 'yargs'
@@ -26,11 +26,11 @@ await yargsInstance
 				})
 				.option('service', {
 					alias: 's',
-					choices: ['bunny'] as const,
+					choices: ['bunny', 'mux', 'cloudflare'] as const,
 					default: 'bunny',
 					demandOption: true,
 					describe:
-						'Streaming service(s) to sync to. Only the Bunny.net streaming CDN is supported at this time.',
+						'Streaming service to sync to. Only the Bunny.net streaming CDN is supported at this time.',
 					type: 'string',
 				})
 				.option('key', {
@@ -84,7 +84,7 @@ await yargsInstance
 				},
 				directory,
 				dryRun,
-				service: service as 'bunny',
+				service: service as Service,
 				stripMetadata,
 				verbose,
 			})

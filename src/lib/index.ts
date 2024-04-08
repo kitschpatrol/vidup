@@ -1,84 +1,59 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import log from './utilities/log'
-import { hasMetadata, stripMetadataFromFile } from './utilities/video-metadata'
+import { getVideosInDirectory, stripMetadataFromVideo, videoHasMetadata } from './utilities/video'
 import { BunnyCdnStream } from 'bunnycdn-stream'
-import fs from 'fs-extra'
 import { hash } from 'hasha'
-import { JSONFilePreset } from 'lowdb'
+import { JSONFilePreset as lowdb } from 'lowdb/node'
 import { createReadStream } from 'node:fs'
 import path from 'node:path'
 
-const vidupStateFileName = '.vidup-state.json'
+export type Service = 'bunny' | 'cloudflare' | 'mux'
 
-// TODO key state to service
-// type SyncState = {
-// 	['bunny']: VideoState[]
-// }
-
-type SyncState = VideoState[]
-
-type VideoState = {
-	filename: string
-	localHash: string
-	remoteHash?: string
+type State = {
+	lastRun?: Date
+	lastUpdate?: Date
+	syncState: Array<{
+		filename: string
+		localHash: string
+		remoteHash: {
+			[K in Service]?: null | string
+		}
+	}>
 }
 
-export type SyncOptions = {
-	credentials: {
-		key: string
-		library: string
-	}
-	directory: string
-	dryRun: boolean
-	service: 'bunny'
-	// Service: 'bunny' | 'cloudflare' | 'mux'
-	stripMetadata?: boolean
-	verbose: boolean
-}
-
-export type StripOptions = {
-	directory: string
-	dryRun: boolean
-	verbose: boolean
-}
-
-export type SyncReport = SyncReportEntry[]
-
-export type SyncReportEntry = {
+export type SyncReport = Array<{
 	action: 'Create' | 'Delete' | 'Unchanged' | 'Update'
 	localFile?: string
 	remoteId: string
 	stripMetadata: boolean
-}
-
-async function getLocalFileList(directory: string): Promise<string[]> {
-	// Get local file list
-	const files = await fs.readdir(directory)
-	const videoFiles = files
-		.filter((file) => {
-			const fileExtension = path.extname(file)
-			const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv']
-			return videoExtensions.includes(fileExtension)
-		})
-		.map((file) => path.join(directory, file))
-	return videoFiles
-}
+}>
 
 /**
- * Strip metadata from all video files in a directory
+ * Strip metadata from multiple video files
  * @returns List of file paths with metadata that were stripped
  */
-export async function stripMetadata(options: StripOptions): Promise<string[]> {
+export async function stripMetadataFromFiles(options: {
+	dryRun?: boolean
+	files: string[]
+	verbose?: boolean
+}): Promise<string[]> {
+	const { dryRun = false, files, verbose = false } = options
+
 	const initialVerbosity = log.verbose
-	log.verbose = options.verbose
+	log.verbose = verbose
 
-	const videoFiles = await getLocalFileList(options.directory)
-	const localVideosWithMetadata = videoFiles.filter(async (videoFile) => hasMetadata(videoFile))
+	const localVideosWithMetadata = []
+	for (const videoFile of files) {
+		if (await videoHasMetadata(videoFile)) {
+			localVideosWithMetadata.push(videoFile)
+		}
+	}
 
-	if (!options.dryRun) {
+	if (!dryRun) {
 		log.info(`Found ${localVideosWithMetadata.length} videos with metadata to strip`)
 		for (const videoFile of localVideosWithMetadata) {
 			console.log(`Stripping metadata from: ${videoFile}`)
-			await stripMetadataFromFile(videoFile)
+			await stripMetadataFromVideo(videoFile)
 		}
 	}
 
@@ -91,63 +66,89 @@ export async function stripMetadata(options: StripOptions): Promise<string[]> {
  * @returns Array of sync report entries describing what was changed (or will change if a dry run)
  */
 // eslint-disable-next-line complexity
-export async function sync(options: SyncOptions): Promise<SyncReport> {
+export async function sync(options: {
+	credentials: {
+		key: string
+		library: string
+	}
+	directory?: string
+	dryRun?: boolean
+	service: Service
+	stripMetadata?: boolean
+	verbose?: boolean
+}): Promise<SyncReport> {
+	// Defaults
+	const {
+		credentials,
+		directory = process.cwd(),
+		dryRun = false,
+		service,
+		stripMetadata = true,
+		verbose = false,
+	} = options
+
 	const initialVerbosity = log.verbose
-	log.verbose = options.verbose
+	log.verbose = verbose
 
 	const syncReport: SyncReport = []
+	const videoFiles = await getVideosInDirectory(directory)
 
-	const videoFiles = await getLocalFileList(options.directory)
-
-	log.info(`Found ${videoFiles.length} video files in directory "${options.directory}"`)
+	log.info(`Found ${videoFiles.length} video files in directory "${directory}"`)
 
 	// Strip metadata if needed
-	const localVideosWithMetadata = await stripMetadata({
-		directory: options.directory,
-		dryRun: options.dryRun,
-		verbose: options.verbose,
-	})
+	const localVideosWithMetadata = stripMetadata
+		? await stripMetadataFromFiles({
+				dryRun,
+				files: videoFiles,
+				verbose,
+			})
+		: []
 
 	// Create a state file if it doesn't exist
-	const stateFile = path.join(options.directory, vidupStateFileName)
-	await fs.ensureFile(stateFile)
-	let state = ((await fs.readJson(stateFile, { throws: false })) ?? []) as SyncState
+	const state = await lowdb<State>(path.join(directory, '.vidup-state.json'), {
+		syncState: [],
+	})
 
 	// Remove state entries for files that no longer exist
-	state = state.filter((entry) => videoFiles.includes(path.join(options.directory, entry.filename)))
+	state.data.syncState = state.data.syncState.filter((entry) =>
+		videoFiles.includes(path.join(directory, entry.filename)),
+	)
 
 	// Add state entries for new files
 	for (const videoFile of videoFiles) {
 		const filename = path.basename(videoFile)
 		// Insecure hash, but only used for diffing
 		const localHash = await hash(videoFile, { algorithm: 'sha1' })
-		const existingEntry = state.find((entry) => entry.filename === filename)
+		const existingEntry = state.data.syncState.find((entry) => entry.filename === filename)
 
 		if (existingEntry) {
 			existingEntry.localHash = localHash
 		} else {
-			state.push({ filename, localHash })
+			state.data.syncState.push({ filename, localHash, remoteHash: {} })
 		}
 	}
 
-	if (!options.dryRun) {
-		await fs.writeJson(stateFile, state, { spaces: 2 })
+	if (!dryRun) {
+		await state.write()
 	}
 
 	// Get remote files and figure out the sync plan
+
+	if (service !== 'bunny') {
+		throw new Error(`Streaming service not yet implemented: ${service}`)
+	}
+
 	const stream = new BunnyCdnStream({
-		apiKey: options.credentials.key,
-		videoLibrary: options.credentials.library,
+		apiKey: credentials.key,
+		videoLibrary: credentials.library,
 	})
 	const remoteVideos = await stream.listAllVideos()
 
-	log.info(
-		`Found ${remoteVideos.length} video files on ${options.service} remote streaming service`,
-	)
+	log.info(`Found ${remoteVideos.length} video files on ${service} remote streaming service`)
 
 	const remoteVideosInGoodStanding = remoteVideos.filter((video) => {
-		const entry = state.find((entry) => entry.filename === video.title)
-		return entry !== undefined && entry.localHash === entry.remoteHash
+		const entry = state.data.syncState.find((entry) => entry.filename === video.title)
+		return entry !== undefined && entry.localHash === entry.remoteHash[service]
 	})
 
 	for (const video of remoteVideosInGoodStanding) {
@@ -159,7 +160,7 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 		})
 	}
 
-	const remoteVideosToCreate = state.filter(
+	const remoteVideosToCreate = state.data.syncState.filter(
 		(entry) => !remoteVideos.some((video) => video.title === entry.filename),
 	)
 
@@ -174,8 +175,8 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 	}
 
 	const remoteVideosToUpdate = remoteVideos.filter((video) => {
-		const entry = state.find((entry) => entry.filename === video.title)
-		return entry !== undefined && entry.localHash !== entry.remoteHash
+		const entry = state.data.syncState.find((entry) => entry.filename === video.title)
+		return entry !== undefined && entry.localHash !== entry.remoteHash[service]
 	})
 
 	// Sync report will be updated with GUIDs after upload
@@ -189,7 +190,7 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 	}
 
 	const remoteVideosToDelete = remoteVideos.filter(
-		(video) => !state.some((entry) => entry.filename === video.title),
+		(video) => !state.data.syncState.some((entry) => entry.filename === video.title),
 	)
 
 	for (const video of remoteVideosToDelete) {
@@ -201,7 +202,10 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 		})
 	}
 
-	if (!options.dryRun) {
+	if (!dryRun) {
+		state.data.lastRun = new Date()
+		await state.write()
+
 		log.info(`Synchronizing...`)
 		// Delete remote
 		// Fastest, do this first
@@ -211,9 +215,13 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 				stream.deleteVideo(remoteVideo.guid),
 				`Deleting remote video ${index + 1}/${remoteVideosToDelete.length}: ${remoteVideo.title}`,
 			)
+
 			if (!deleteResponse.success) {
 				throw new Error(`Failed to delete remote video: ${remoteVideo.title}`)
 			}
+
+			state.data.lastUpdate = new Date()
+			await state.write()
 		}
 
 		// Create / Upload
@@ -221,7 +229,7 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 		for (const [index, localVideo] of remoteVideosToCreate.entries()) {
 			if (index === 0) log.info(`Uploading ${remoteVideosToCreate.length} new local videos...`)
 
-			const videoFile = createReadStream(path.join(options.directory, localVideo.filename))
+			const videoFile = createReadStream(path.join(directory, localVideo.filename))
 			const response = await log.infoSpin(
 				stream.createAndUploadVideo(videoFile, { title: localVideo.filename }),
 				`Uploading new video ${index + 1}/${remoteVideosToCreate.length}: ${localVideo.filename}`,
@@ -231,13 +239,16 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 				`Remote video ${index + 1}/${remoteVideosToCreate.length} created with GUID: ${response.guid}`,
 			)
 
-			const stateEntry = state.find((entry) => entry.filename === localVideo.filename)
+			const stateEntry = state.data.syncState.find(
+				(entry) => entry.filename === localVideo.filename,
+			)
 			if (stateEntry === undefined) {
 				throw new Error(`Failed to find state entry for: ${localVideo.filename}`)
 			}
 
-			stateEntry.remoteHash = localVideo.localHash
-			await fs.writeJSON(stateFile, state, { spaces: 2 })
+			stateEntry.remoteHash[service] = localVideo.localHash
+			state.data.lastUpdate = new Date()
+			await state.write()
 
 			const reportEntry = syncReport.find((entry) => entry.localFile === localVideo.filename)
 			if (reportEntry === undefined) {
@@ -259,8 +270,8 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 				)
 			}
 
-			const localVideo = state.find((entry) => entry.filename === remoteVideo.title)
-			if (localVideo === undefined) {
+			const stateEntry = state.data.syncState.find((entry) => entry.filename === remoteVideo.title)
+			if (stateEntry === undefined) {
 				throw new Error(`Failed to find state entry for: ${remoteVideo.title}`)
 			}
 
@@ -269,9 +280,9 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 				throw new Error(`Failed to delete remote video before updating: ${remoteVideo.title}`)
 			}
 
-			const videoFile = createReadStream(path.join(options.directory, localVideo.filename))
+			const videoFile = createReadStream(path.join(directory, stateEntry.filename))
 			const createResponse = await log.infoSpin(
-				stream.createAndUploadVideo(videoFile, { title: localVideo.filename }),
+				stream.createAndUploadVideo(videoFile, { title: stateEntry.filename }),
 				`Updating remote video ${index + 1}/${remoteVideosToUpdate.length}: ${remoteVideo.title}`,
 			)
 
@@ -279,12 +290,13 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 				`Updated remote video ${index + 1}/${remoteVideosToUpdate.length} created with GUID: ${createResponse.guid}`,
 			)
 
-			localVideo.remoteHash = localVideo.localHash
-			await fs.writeJSON(stateFile, state, { spaces: 2 })
+			stateEntry.remoteHash[service] = stateEntry.localHash
+			state.data.lastUpdate = new Date()
+			await state.write()
 
-			const reportEntry = syncReport.find((entry) => entry.localFile === localVideo.filename)
+			const reportEntry = syncReport.find((entry) => entry.localFile === stateEntry.filename)
 			if (reportEntry === undefined) {
-				throw new Error(`Failed to find report entry for: ${localVideo.filename}`)
+				throw new Error(`Failed to find report entry for: ${stateEntry.filename}`)
 			}
 
 			reportEntry.remoteId = createResponse.guid
