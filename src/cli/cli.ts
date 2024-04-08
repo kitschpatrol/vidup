@@ -14,7 +14,7 @@ await yargsInstance
 	// `vidup sync` (default)
 	.command(
 		['$0 <directory> [options]', 'sync <directory> [options]'],
-		'Synchronize a remote video streaming service to mirror the contents of a local directory.',
+		'Synchronize a remote video streaming service to mirror the contents of a local directory. Warning: This command will irrevocably delete remote videos that are not present in the local directory.',
 		(yargs) =>
 			yargs
 				.positional('directory', {
@@ -34,31 +34,31 @@ await yargsInstance
 				.option('key', {
 					default: undefined,
 					demandOption: true,
-					describe: 'Streaming service API access key',
+					describe: 'Streaming service API access key.',
 					type: 'string',
 				})
 				.option('library', {
 					default: undefined,
 					demandOption: true,
-					describe: 'Streaming service library ID',
+					describe: 'Streaming service library ID.',
 					type: 'string',
 				})
 				.option('strip-metadata', {
-					default: true,
+					default: false,
 					describe:
-						'Remove all metadata from the video files before uploading them to the streaming service.',
+						'Remove all metadata from the video files before uploading them to the streaming service. Warning: This will modify local videos in-place.',
 					type: 'boolean',
 				})
 				.option('dry-run', {
 					alias: 'd',
 					default: false,
 					describe:
-						'Perform a dry run without making any changes. Useful for testing and debugging.',
+						'Perform a dry run without making any changes. Useful for testing and debugging. Pairs well with the `--json` command.',
 					type: 'boolean',
 				})
 				.option('json', {
 					default: false,
-					describe: 'Output the sync report as JSON',
+					describe: 'Output the sync report as JSON.',
 					type: 'boolean',
 				})
 				.option('verbose', {

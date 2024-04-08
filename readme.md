@@ -89,15 +89,15 @@ Usage:
 vidup [command]
 ```
 
-| Command | Argument                  | Description                                                                                                    |
-| ------- | ------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `sync`  | `<directory>` `[options]` | Synchronize a remote video streaming service to mirror the contents of a local directory. _(Default command.)_ |
+| Command | Argument                  | Description                                                                                                                                                                                                             |
+| ------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sync`  | `<directory>` `[options]` | Synchronize a remote video streaming service to mirror the contents of a local directory. Warning: This command will irrevocably delete remote videos that are not present in the local directory. _(Default command.)_ |
 
 _See the sections below for more information on each subcommand._
 
 #### Subcommand: `vidup sync`
 
-Synchronize a remote video streaming service to mirror the contents of a local directory.
+Synchronize a remote video streaming service to mirror the contents of a local directory. Warning: This command will irrevocably delete remote videos that are not present in the local directory.
 
 Usage:
 
@@ -109,17 +109,17 @@ vidup sync <directory> [options]
 | ------------------- | --------------------------------------------------------------------- | -------- |
 | `directory`         | The path to the local directory of video files to sync. _(Required.)_ | `string` |
 
-| Option             | Alias | Description                                                                                                                     | Type      | Default |
-| ------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- |
-| `--service`        | `-s`  | Streaming service to sync to. Only the Bunny.net streaming CDN is supported at this time.                                       | `string`  |         |
-| `--key`            |       | Streaming service API access key                                                                                                | `string`  |         |
-| `--library`        |       | Streaming service library ID                                                                                                    | `string`  |         |
-| `--strip-metadata` |       | Remove all metadata from the video files before uploading them to the streaming service.                                        | `boolean` | `true`  |
-| `--dry-run`        | `-d`  | Perform a dry run without making any changes. Useful for testing and debugging.                                                 | `boolean` | `false` |
-| `--json`           |       | Output the sync report as JSON                                                                                                  | `boolean` | `false` |
-| `--verbose`        |       | Enable verbose logging. All verbose logs and prefixed with their log level and are printed to `stderr` for ease of redirection. | `boolean` | `false` |
-| `--help`           | `-h`  | Show help                                                                                                                       | `boolean` |         |
-| `--version`        | `-v`  | Show version number                                                                                                             | `boolean` |         |
+| Option             | Alias | Description                                                                                                                               | Type      | Default |
+| ------------------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- |
+| `--service`        | `-s`  | Streaming service to sync to. Only the Bunny.net streaming CDN is supported at this time.                                                 | `string`  |         |
+| `--key`            |       | Streaming service API access key.                                                                                                         | `string`  |         |
+| `--library`        |       | Streaming service library ID.                                                                                                             | `string`  |         |
+| `--strip-metadata` |       | Remove all metadata from the video files before uploading them to the streaming service. Warning: This will modify local videos in-place. | `boolean` | `false` |
+| `--dry-run`        | `-d`  | Perform a dry run without making any changes. Useful for testing and debugging. Pairs well with the `--json` command.                     | `boolean` | `false` |
+| `--json`           |       | Output the sync report as JSON.                                                                                                           | `boolean` | `false` |
+| `--verbose`        |       | Enable verbose logging. All verbose logs and prefixed with their log level and are printed to `stderr` for ease of redirection.           | `boolean` | `false` |
+| `--help`           | `-h`  | Show help                                                                                                                                 | `boolean` |         |
+| `--version`        | `-v`  | Show version number                                                                                                                       | `boolean` |         |
 
 <!-- /cli-help -->
 
@@ -140,7 +140,7 @@ Updated: a-changed-video.mp4
 Deleted: a-remote-only-video.mp4
 ```
 
-**Perform a non-executive dry-run and get the snynchronization plan report as JSON:**
+**Perform a non-executive dry run and get the synchronization plan report as JSON:**
 
 ```sh
 vidup . --json --dry-run --service bunny --key <BUNNY_API_KEY> --library <BUNNY_LIBRARY_ID>
@@ -166,7 +166,7 @@ async function syncVideoInDirectory(
       library: string
     }
     dryRun?: boolean // defaults to false
-    stripMetadata?: boolean // defaults to true
+    stripMetadata?: boolean // defaults to false
     verbose?: boolean // defaults to false
   },
 ): Promise<SyncReport>

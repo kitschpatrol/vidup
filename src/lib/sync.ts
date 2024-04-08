@@ -51,7 +51,7 @@ export async function syncVideoInDirectory(
 	options: SyncOptions,
 ): Promise<SyncReport> {
 	const resolvedDirectory = untildify(directory)
-	const { credentials, dryRun = false, service, stripMetadata = true, verbose = false } = options
+	const { credentials, dryRun = false, service, stripMetadata = false, verbose = false } = options
 
 	const initialVerbosity = log.verbose
 	log.verbose = verbose
