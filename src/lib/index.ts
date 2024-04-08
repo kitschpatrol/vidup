@@ -3,6 +3,7 @@ import { hasMetadata, stripMetadataFromFile } from './utilities/video-metadata'
 import { BunnyCdnStream } from 'bunnycdn-stream'
 import fs from 'fs-extra'
 import { hash } from 'hasha'
+import { JSONFilePreset } from 'lowdb'
 import { createReadStream } from 'node:fs'
 import path from 'node:path'
 
@@ -202,7 +203,21 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 
 	if (!options.dryRun) {
 		log.info(`Synchronizing...`)
+		// Delete remote
+		// Fastest, do this first
+		for (const [index, remoteVideo] of remoteVideosToDelete.entries()) {
+			if (index === 0) log.info(`Deleting ${remoteVideosToDelete.length} remote videos...`)
+			const deleteResponse = await log.infoSpin(
+				stream.deleteVideo(remoteVideo.guid),
+				`Deleting remote video ${index + 1}/${remoteVideosToDelete.length}: ${remoteVideo.title}`,
+			)
+			if (!deleteResponse.success) {
+				throw new Error(`Failed to delete remote video: ${remoteVideo.title}`)
+			}
+		}
+
 		// Create / Upload
+		// New data, do this second
 		for (const [index, localVideo] of remoteVideosToCreate.entries()) {
 			if (index === 0) log.info(`Uploading ${remoteVideosToCreate.length} new local videos...`)
 
@@ -233,6 +248,7 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 		}
 
 		// Update / Upload
+		// "Backup" data already exists, do this last
 		// Bunny doesn't actually support "update", so we have to delete and re-upload
 		// Note that this will change the GUID of the video!
 		for (const [index, remoteVideo] of remoteVideosToUpdate.entries()) {
@@ -272,18 +288,6 @@ export async function sync(options: SyncOptions): Promise<SyncReport> {
 			}
 
 			reportEntry.remoteId = createResponse.guid
-		}
-
-		// Delete remote
-		for (const [index, remoteVideo] of remoteVideosToDelete.entries()) {
-			if (index === 0) log.info(`Deleting ${remoteVideosToDelete.length} remote videos...`)
-			const deleteResponse = await log.infoSpin(
-				stream.deleteVideo(remoteVideo.guid),
-				`Deleting remote video ${index + 1}/${remoteVideosToDelete.length}: ${remoteVideo.title}`,
-			)
-			if (!deleteResponse.success) {
-				throw new Error(`Failed to delete remote video: ${remoteVideo.title}`)
-			}
 		}
 
 		log.info(`All ${videoFiles.length} videos are now in sync!`)
