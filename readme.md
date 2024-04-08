@@ -111,7 +111,7 @@ vidup sync <directory> [options]
 
 | Option             | Alias | Description                                                                                                                               | Type      | Default |
 | ------------------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- |
-| `--service`        | `-s`  | Streaming service to sync to. Only the Bunny.net streaming CDN is supported at this time.                                                 | `string`  |         |
+| `--service`        | `-s`  | Streaming service / platform to sync local video files to. Only the Bunny.net streaming CDN is supported at this time.                    | `string`  |         |
 | `--key`            |       | Streaming service API access key.                                                                                                         | `string`  |         |
 | `--library`        |       | Streaming service library ID.                                                                                                             | `string`  |         |
 | `--strip-metadata` |       | Remove all metadata from the video files before uploading them to the streaming service. Warning: This will modify local videos in-place. | `boolean` | `false` |
@@ -134,10 +134,10 @@ vidup . --service bunny --key <BUNNY_API_KEY> --library <BUNNY_LIBRARY_ID>
 Large uploads can take some time. Upon completion, a report summarizing the actions taken is printed to stdout:
 
 ```sh
-Unchanged: an-already-uploaded-video.mov
-Created: a-new-video.mov
-Updated: a-changed-video.mp4
-Deleted: a-remote-only-video.mp4
+None: an-already-uploaded-video.mov
+Create: a-new-video.mov
+Update: a-changed-video.mp4
+Delete: a-remote-only-video.mp4
 ```
 
 **Perform a non-executive dry run and get the synchronization plan report as JSON:**
@@ -154,7 +154,7 @@ The JSON version of the output provides some extra info.
 
 Vidup's functionality is also provided in module form for use in TypeScript or JavaScript Node projects.
 
-The library exports a single async function, `syncVideoInDirectory`, which takes an options argument mirroring the arguments available via the command line. The same default values apply:
+The library exports `syncVideoInDirectory`, which takes an options argument mirroring the arguments available via the command line and returns an object reporting the synchronization steps performed:
 
 ```ts
 async function syncVideoInDirectory(
@@ -166,10 +166,21 @@ async function syncVideoInDirectory(
       library: string
     }
     dryRun?: boolean // defaults to false
-    stripMetadata?: boolean // defaults to false
     verbose?: boolean // defaults to false
   },
 ): Promise<SyncReport>
+```
+
+A `stripVideoMetadataInDirectory` function is also exported, which will remove metadata from all videos in the target directory. It returns a list of video filepaths with metadata:
+
+```ts
+export async function stripVideoMetadataInFiles(
+  directory: string,
+  options: {
+    dryRun?: boolean // defaults to false
+    verbose?: boolean // defaults to false
+  },
+): Promise<string[]>
 ```
 
 #### Examples

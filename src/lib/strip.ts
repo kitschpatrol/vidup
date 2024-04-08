@@ -1,6 +1,5 @@
 import log from './utilities/log'
 import { getVideosInDirectory, stripVideoMetadata, videoHasMetadata } from './utilities/video'
-import untildify from 'untildify'
 
 export type StripOptions = {
 	dryRun?: boolean
@@ -16,9 +15,8 @@ export async function stripVideoMetadataInDirectory(
 	options: StripOptions = {},
 ): Promise<string[]> {
 	const { dryRun = false, verbose = false } = options
-	const resolvedDirectory = untildify(directory)
 
-	const files = await getVideosInDirectory(resolvedDirectory)
+	const files = await getVideosInDirectory(directory)
 
 	return stripVideoMetadataInFiles(files, {
 		dryRun,

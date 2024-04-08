@@ -2,20 +2,17 @@ import { execa } from 'execa'
 import ffmpegPath from 'ffmpeg-static'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import untildify from 'untildify'
 
 export async function getVideosInDirectory(directory: string): Promise<string[]> {
-	const resolvedDirectory = untildify(directory)
-
 	// Get local file list
-	const files = await fs.readdir(resolvedDirectory)
+	const files = await fs.readdir(directory)
 	const videoFiles = files
 		.filter((file) => {
 			const fileExtension = path.extname(file)
 			const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv']
 			return videoExtensions.includes(fileExtension)
 		})
-		.map((file) => path.join(resolvedDirectory, file))
+		.map((file) => path.join(directory, file))
 	return videoFiles
 }
 

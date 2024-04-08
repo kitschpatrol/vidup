@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { stripVideoMetadataInFiles } from './strip'
 import log from './utilities/log'
 import { getVideosInDirectory } from './utilities/video'
 import { BunnyCdnStream } from 'bunnycdn-stream'
@@ -7,7 +6,6 @@ import { hash } from 'hasha'
 import { JSONFilePreset as lowdb } from 'lowdb/node'
 import { createReadStream } from 'node:fs'
 import path from 'node:path'
-import untildify from 'untildify'
 
 export type Service = 'bunny' | 'cloudflare' | 'mux'
 
@@ -24,10 +22,10 @@ type State = {
 }
 
 export type SyncReport = Array<{
-	action: 'Created' | 'Deleted' | 'Unchanged' | 'Updated'
+	action: 'Create' | 'Delete' | 'None' | 'Update'
 	localFile?: string
 	remoteId: string
-	stripMetadata: boolean
+	stripMetadata?: boolean
 }>
 
 export type SyncOptions = {
@@ -37,7 +35,6 @@ export type SyncOptions = {
 	}
 	dryRun?: boolean
 	service: Service
-	stripMetadata?: boolean
 	verbose?: boolean
 }
 
@@ -50,33 +47,24 @@ export async function syncVideoInDirectory(
 	directory: string,
 	options: SyncOptions,
 ): Promise<SyncReport> {
-	const resolvedDirectory = untildify(directory)
-	const { credentials, dryRun = false, service, stripMetadata = false, verbose = false } = options
+	const { credentials, dryRun = false, service, verbose = false } = options
 
 	const initialVerbosity = log.verbose
 	log.verbose = verbose
 
 	const syncReport: SyncReport = []
-	const videoFiles = await getVideosInDirectory(resolvedDirectory)
+	const videoFiles = await getVideosInDirectory(directory)
 
 	log.info(`Found ${videoFiles.length} video files in directory "${directory}"`)
 
-	// Strip metadata if needed
-	const localVideosWithMetadata = stripMetadata
-		? await stripVideoMetadataInFiles(videoFiles, {
-				dryRun,
-				verbose,
-			})
-		: []
-
 	// Create a state file if it doesn't exist
-	const state = await lowdb<State>(path.join(resolvedDirectory, '.vidup-state.json'), {
+	const state = await lowdb<State>(path.join(directory, '.vidup-state.json'), {
 		syncState: [],
 	})
 
 	// Remove state entries for files that no longer exist
 	state.data.syncState = state.data.syncState.filter((entry) =>
-		videoFiles.includes(path.join(resolvedDirectory, entry.filename)),
+		videoFiles.includes(path.join(directory, entry.filename)),
 	)
 
 	// Add state entries for new files
@@ -118,10 +106,9 @@ export async function syncVideoInDirectory(
 
 	for (const video of remoteVideosInGoodStanding) {
 		syncReport.push({
-			action: 'Unchanged',
+			action: 'None',
 			localFile: video.title,
 			remoteId: video.guid,
-			stripMetadata: localVideosWithMetadata.includes(video.title),
 		})
 	}
 
@@ -132,10 +119,9 @@ export async function syncVideoInDirectory(
 	// Sync report will be updated with GUIDs after upload
 	for (const video of remoteVideosToCreate) {
 		syncReport.push({
-			action: 'Created',
+			action: 'Create',
 			localFile: video.filename,
 			remoteId: 'Not yet uploaded (Dry run)',
-			stripMetadata: localVideosWithMetadata.includes(video.filename),
 		})
 	}
 
@@ -147,10 +133,9 @@ export async function syncVideoInDirectory(
 	// Sync report will be updated with GUIDs after upload
 	for (const video of remoteVideosToUpdate) {
 		syncReport.push({
-			action: 'Updated',
+			action: 'Update',
 			localFile: video.title,
 			remoteId: 'Not yet uploaded (Dry run)',
-			stripMetadata: localVideosWithMetadata.includes(video.title),
 		})
 	}
 
@@ -160,10 +145,9 @@ export async function syncVideoInDirectory(
 
 	for (const video of remoteVideosToDelete) {
 		syncReport.push({
-			action: 'Deleted',
+			action: 'Delete',
 			localFile: video.title,
 			remoteId: video.guid,
-			stripMetadata: localVideosWithMetadata.includes(video.title),
 		})
 	}
 
@@ -194,7 +178,7 @@ export async function syncVideoInDirectory(
 		for (const [index, localVideo] of remoteVideosToCreate.entries()) {
 			if (index === 0) log.info(`Uploading ${remoteVideosToCreate.length} new local videos...`)
 
-			const videoFile = createReadStream(path.join(resolvedDirectory, localVideo.filename))
+			const videoFile = createReadStream(path.join(directory, localVideo.filename))
 			const response = await log.infoSpin(
 				stream.createAndUploadVideo(videoFile, { title: localVideo.filename }),
 				`Uploading new video ${index + 1}/${remoteVideosToCreate.length}: ${localVideo.filename}`,
@@ -245,7 +229,7 @@ export async function syncVideoInDirectory(
 				throw new Error(`Failed to delete remote video before updating: ${remoteVideo.title}`)
 			}
 
-			const videoFile = createReadStream(path.join(resolvedDirectory, stateEntry.filename))
+			const videoFile = createReadStream(path.join(directory, stateEntry.filename))
 			const createResponse = await log.infoSpin(
 				stream.createAndUploadVideo(videoFile, { title: stateEntry.filename }),
 				`Updating remote video ${index + 1}/${remoteVideosToUpdate.length}: ${remoteVideo.title}`,

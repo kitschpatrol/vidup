@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
-import { type VidupService, log, syncVideoInDirectory } from '../lib'
+import { type Service, log, stripVideoMetadataInDirectory, syncVideoInDirectory } from '../lib'
+import path from 'node:path'
 import prettyMilliseconds from 'pretty-ms'
+import untildify from 'untildify'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
@@ -28,7 +30,7 @@ await yargsInstance
 					choices: ['bunny', 'mux', 'cloudflare'] as const,
 					demandOption: true,
 					describe:
-						'Streaming service to sync to. Only the Bunny.net streaming CDN is supported at this time.',
+						'Streaming service / platform to sync local video files to. Only the Bunny.net streaming CDN is supported at this time.',
 					type: 'string',
 				})
 				.option('key', {
@@ -78,6 +80,7 @@ await yargsInstance
 				}),
 		async ({ directory, dryRun, json, key, library, service, stripMetadata, verbose }) => {
 			log.verbose = verbose
+			const resolvedDirectory = path.resolve(untildify(directory))
 
 			log.info('Starting video synchronization...')
 
@@ -85,23 +88,41 @@ await yargsInstance
 				log.warn(`Dry run enabled, not making any changes`)
 			}
 
-			const syncReport = await syncVideoInDirectory(directory, {
+			const stripReport: string[] = stripMetadata
+				? await stripVideoMetadataInDirectory(resolvedDirectory, {
+						dryRun,
+						verbose,
+					})
+				: []
+
+			const syncReport = await syncVideoInDirectory(resolvedDirectory, {
 				credentials: {
 					key,
 					library,
 				},
 				dryRun,
-				service: service as VidupService,
-				stripMetadata,
+				service: service as Service,
 				verbose,
 			})
 
 			if (json) {
+				// Add the strip report to the sync report
+				for (const entry of syncReport) {
+					entry.stripMetadata =
+						entry.localFile !== undefined && stripReport.includes(entry.localFile)
+				}
+
 				process.stdout.write(JSON.stringify(syncReport, undefined, 2))
 				process.stdout.write('\n')
 			} else {
+				for (const entry of stripReport) {
+					process.stdout.write(`${dryRun ? 'Found' : 'Stripped'} metadata: "${entry}"\n`)
+				}
+
 				for (const entry of syncReport) {
-					process.stdout.write(`${entry.action}: ${entry.localFile}\n`)
+					process.stdout.write(
+						`${entry.action}: "${entry.localFile}"\t Remote GUID: "${entry.remoteId}"\n`,
+					)
 				}
 			}
 
