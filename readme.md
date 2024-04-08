@@ -143,7 +143,7 @@ Deleted: a-remote-only-video.mp4
 **Perform a non-executive dry-run and get the snynchronization plan report as JSON:**
 
 ```sh
-vidup . --service bunny --key --json < BUNNY_API_KEY > --library < BUNNY_LIBRARY_ID > --dry-run
+vidup . --json --dry-run --service bunny --key <BUNNY_API_KEY> --library <BUNNY_LIBRARY_ID>
 ```
 
 The JSON version of the output provides some extra info.
