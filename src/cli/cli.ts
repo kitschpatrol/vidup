@@ -14,7 +14,7 @@ await yargsInstance
 	// `vidup sync` (default)
 	.command(
 		['$0 <directory> [options]', 'sync <directory> [options]'],
-		'Synchronize a remote streaming service to mirror the contents of a local directory.',
+		'Synchronize a remote video streaming service to mirror the contents of a local directory.',
 		(yargs) =>
 			yargs
 				.positional('directory', {
@@ -26,7 +26,6 @@ await yargsInstance
 				.option('service', {
 					alias: 's',
 					choices: ['bunny', 'mux', 'cloudflare'] as const,
-					default: 'bunny',
 					demandOption: true,
 					describe:
 						'Streaming service to sync to. Only the Bunny.net streaming CDN is supported at this time.',
@@ -38,6 +37,12 @@ await yargsInstance
 					describe: 'Streaming service API access key',
 					type: 'string',
 				})
+				.option('library', {
+					default: undefined,
+					demandOption: true,
+					describe: 'Streaming service library ID',
+					type: 'string',
+				})
 				.option('strip-metadata', {
 					default: true,
 					describe:
@@ -45,16 +50,11 @@ await yargsInstance
 					type: 'boolean',
 				})
 				.option('dry-run', {
+					alias: 'd',
 					default: false,
 					describe:
 						'Perform a dry run without making any changes. Useful for testing and debugging.',
 					type: 'boolean',
-				})
-				.option('library', {
-					default: undefined,
-					demandOption: true,
-					describe: 'Streaming service library ID',
-					type: 'string',
 				})
 				.option('json', {
 					default: false,
@@ -66,6 +66,15 @@ await yargsInstance
 					describe:
 						'Enable verbose logging. All verbose logs and prefixed with their log level and are printed to `stderr` for ease of redirection.',
 					type: 'boolean',
+				})
+				.check((argv) => {
+					if (argv.service === 'bunny') {
+						return argv
+					}
+
+					throw new Error(
+						`Sorry, vidup doesn't yet implement synchronization support the ${argv.service} streaming service. Only Bunny.net is supported at the moment. If you'd like to see support for another service, please open an issue or send a PR on GitHub: https://github.com/kitschpatrol/vidup/issues`,
+					)
 				}),
 		async ({ directory, dryRun, json, key, library, service, stripMetadata, verbose }) => {
 			log.verbose = verbose
