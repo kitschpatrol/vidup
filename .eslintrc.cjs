@@ -8,7 +8,7 @@ module.exports = {
 		{
 			files: ['src/cli/**/*'],
 			rules: {
-				'n/shebang': 'off',
+				'n/hashbang': 'off',
 			},
 		},
 	],

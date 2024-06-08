@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { version } from '../../package.json'
 import { type Service, log, stripVideoMetadataInDirectory, syncVideoInDirectory } from '../lib'
 import path from 'node:path'
 import prettyMilliseconds from 'pretty-ms'
@@ -132,7 +133,7 @@ await yargsInstance
 	)
 	.demandCommand(1)
 	.alias('h', 'help')
-	.version()
+	.version(version)
 	.alias('v', 'version')
 	.help()
 	.wrap(process.stdout.isTTY ? Math.min(120, yargsInstance.terminalWidth()) : 0)
