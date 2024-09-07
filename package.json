@@ -24,13 +24,18 @@
 		"pnpm": ">=9.0.0"
 	},
 	"bin": {
-		"vidup": "bin/cli.js"
+		"vidup": "dist/bin/cli.js"
 	},
 	"main": "./dist/lib/index.js",
 	"module": "./dist/lib/index.js",
+	"exports": {
+		".": {
+			"import": "./dist/lib/index.js",
+			"types": "./dist/lib/index.d.ts"
+		}
+	},
 	"types": "./dist/lib/index.d.ts",
 	"files": [
-		"bin/*",
 		"dist/*"
 	],
 	"keywords": [
@@ -43,14 +48,15 @@
 		"video"
 	],
 	"scripts": {
-		"build": "tsup && tsc -p tsconfig.build.json",
-		"clean": "git clean -fdX && rm -f pnpm-lock.yaml",
-		"fix": "pnpm shared-config --fix",
-		"lint": "pnpm shared-config --lint",
-		"release": "pnpm bumpp -r --commit 'Release: %s' --tag 'v%s' && pnpm build && pnpm publish --otp $(op read 'op://Personal/Npmjs/one-time password?attribute=otp')",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"build": "pkgroll --clean-dist --minify",
+		"clean": "rimraf ./pnpm-lock.yaml && git clean -fdX",
+		"fix": "shared-config --fix",
+		"lint": "shared-config --lint",
+		"release": "pnpm bumpp -r --commit 'Release: %s' --tag 'v%s' && pnpm build && pnpm publish --otp $(op read 'op://Personal/Npmjs/one-time password?attribute=otp')"
 	},
 	"dependencies": {
+		"@types/fs-extra": "^11.0.4",
+		"@types/yargs": "^17.0.33",
 		"bunnycdn-stream": "^2.4.0",
 		"execa": "^8.0.1",
 		"ffmpeg-static": "^5.2.0",
@@ -61,15 +67,13 @@
 	},
 	"devDependencies": {
 		"@kitschpatrol/shared-config": "^4.7.5",
-		"@types/fs-extra": "^11.0.4",
 		"@types/node": "^20.16.5",
-		"@types/yargs": "^17.0.33",
 		"bumpp": "^9.5.2",
 		"chalk": "^5.3.0",
 		"lowdb": "^7.0.1",
+		"pkgroll": "^2.4.2",
 		"pretty-ms": "^9.1.0",
 		"rimraf": "^6.0.1",
-		"tsup": "^8.2.4",
 		"typescript": "^5.5.4",
 		"untildify": "^5.0.0"
 	},
