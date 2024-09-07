@@ -18,7 +18,7 @@
 		"url": "https://ericmika.com"
 	},
 	"license": "MIT",
-	"packageManager": "pnpm@9.2.0",
+	"packageManager": "pnpm@9.9.0",
 	"engines": {
 		"node": ">=18.0.0",
 		"pnpm": ">=9.0.0"
@@ -56,20 +56,21 @@
 		"ffmpeg-static": "^5.2.0",
 		"fs-extra": "^11.2.0",
 		"hasha": "^6.0.0",
-		"ora": "^8.0.1",
+		"ora": "^8.1.0",
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
-		"@kitschpatrol/shared-config": "^4.7.0",
+		"@kitschpatrol/shared-config": "^4.7.5",
 		"@types/fs-extra": "^11.0.4",
-		"@types/node": "^20.14.2",
-		"@types/yargs": "^17.0.32",
-		"bumpp": "^9.4.1",
+		"@types/node": "^20.16.5",
+		"@types/yargs": "^17.0.33",
+		"bumpp": "^9.5.2",
 		"chalk": "^5.3.0",
 		"lowdb": "^7.0.1",
-		"pretty-ms": "^9.0.0",
-		"tsup": "^8.1.0",
-		"typescript": "^5.4.5",
+		"pretty-ms": "^9.1.0",
+		"rimraf": "^6.0.1",
+		"tsup": "^8.2.4",
+		"typescript": "^5.5.4",
 		"untildify": "^5.0.0"
 	},
 	"publishConfig": {

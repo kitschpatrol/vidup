@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import log from './utilities/log'
-import { getVideosInDirectory } from './utilities/video'
 import { BunnyCdnStream } from 'bunnycdn-stream'
 import { hash } from 'hasha'
 import { JSONFilePreset as lowdb } from 'lowdb/node'
 import { createReadStream } from 'node:fs'
 import path from 'node:path'
+import log from './utilities/log'
+import { getVideosInDirectory } from './utilities/video'
 
 export type Service = 'bunny' | 'cloudflare' | 'mux'
 

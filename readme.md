@@ -109,17 +109,17 @@ vidup sync <directory> [options]
 | ------------------- | --------------------------------------------------------------------- | -------- |
 | `directory`         | The path to the local directory of video files to sync. _(Required.)_ | `string` |
 
-| Option             | Alias | Description                                                                                                                               | Type      | Default |
-| ------------------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- |
-| `--service`        | `-s`  | Streaming service / platform to sync local video files to. Only the Bunny.net streaming CDN is supported at this time.                    | `string`  |         |
-| `--key`            |       | Streaming service API access key.                                                                                                         | `string`  |         |
-| `--library`        |       | Streaming service library ID.                                                                                                             | `string`  |         |
-| `--strip-metadata` |       | Remove all metadata from the video files before uploading them to the streaming service. Warning: This will modify local videos in-place. | `boolean` | `false` |
-| `--dry-run`        | `-d`  | Perform a dry run without making any changes. Useful for testing and debugging. Pairs well with the `--json` command.                     | `boolean` | `false` |
-| `--json`           |       | Output the sync report as JSON.                                                                                                           | `boolean` | `false` |
-| `--verbose`        |       | Enable verbose logging. All verbose logs and prefixed with their log level and are printed to `stderr` for ease of redirection.           | `boolean` | `false` |
-| `--help`           | `-h`  | Show help                                                                                                                                 | `boolean` |         |
-| `--version`        | `-v`  | Show version number                                                                                                                       | `boolean` |         |
+| Option              | Description                                                                                                                               | Type                             | Default |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------- |
+| `--service`<br>`-s` | Streaming service / platform to sync local video files to. Only the Bunny.net streaming CDN is supported at this time.                    | `"bunny"` `"mux"` `"cloudflare"` |         |
+| `--key`             | Streaming service API access key.                                                                                                         | `string`                         |         |
+| `--library`         | Streaming service library ID.                                                                                                             | `string`                         |         |
+| `--strip-metadata`  | Remove all metadata from the video files before uploading them to the streaming service. Warning: This will modify local videos in-place. | `boolean`                        | `false` |
+| `--dry-run`<br>`-d` | Perform a dry run without making any changes. Useful for testing and debugging. Pairs well with the `--json` command.                     | `boolean`                        | `false` |
+| `--json`            | Output the sync report as JSON.                                                                                                           | `boolean`                        | `false` |
+| `--verbose`         | Enable verbose logging. All verbose logs and prefixed with their log level and are printed to `stderr` for ease of redirection.           | `boolean`                        | `false` |
+| `--help`<br>`-h`    | Show help                                                                                                                                 | `boolean`                        |         |
+| `--version`<br>`-v` | Show version number                                                                                                                       | `boolean`                        |         |
 
 <!-- /cli-help -->
 
@@ -219,7 +219,7 @@ Video streaming providers have slow and clunky web UIs. I'd rather not maintain 
 
 [@kitschpatrol](https://github.com/kitschpatrol)
 
-## Acknowledgements
+## Acknowledgments
 
 Thanks to [@dan-online](https://github.com/dan-online) for his super-helpful [bunnycdn-stream](https://github.com/dan-online/bunnycdn-stream) library.
 

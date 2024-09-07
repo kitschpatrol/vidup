@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { version } from '../../package.json'
-import { type Service, log, stripVideoMetadataInDirectory, syncVideoInDirectory } from '../lib'
 import path from 'node:path'
 import prettyMilliseconds from 'pretty-ms'
 import untildify from 'untildify'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
+import { version } from '../../package.json'
+import { log, type Service, stripVideoMetadataInDirectory, syncVideoInDirectory } from '../lib'
 
 const startTime = performance.now()
 const yargsInstance = yargs(hideBin(process.argv))
