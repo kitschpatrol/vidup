@@ -6,7 +6,6 @@ import { oraPromise } from 'ora'
 
 const isNode = process?.versions?.node !== undefined
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const log = {
 	verbose: false,
 

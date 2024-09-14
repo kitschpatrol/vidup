@@ -3,22 +3,16 @@
 	"version": "1.0.5",
 	"type": "module",
 	"description": "Synchronize a local directory of video files to remote streaming services.",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/kitschpatrol/vidup.git"
-	},
+	"repository": "github:kitschpatrol/vidup",
 	"homepage": "https://github.com/kitschpatrol/vidup",
-	"bugs": {
-		"url": "https://github.com/kitschpatrol/vidup/issues",
-		"email": "eric@ericmika.com"
-	},
+	"bugs": "https://github.com/kitschpatrol/vidup/issues",
 	"author": {
 		"name": "Eric Mika",
 		"email": "eric@ericmika.com",
 		"url": "https://ericmika.com"
 	},
 	"license": "MIT",
-	"packageManager": "pnpm@9.9.0",
+	"packageManager": "pnpm@9.10.0",
 	"engines": {
 		"node": ">=18.0.0",
 		"pnpm": ">=9.0.0"
@@ -49,16 +43,16 @@
 	],
 	"scripts": {
 		"build": "pkgroll --clean-dist --minify",
-		"clean": "rimraf ./pnpm-lock.yaml && git clean -fdX",
+		"clean": "git rm -f pnpm-lock.yaml ; git clean -fdX",
 		"fix": "shared-config --fix",
 		"lint": "shared-config --lint",
-		"release": "pnpm bumpp -r --commit 'Release: %s' --tag 'v%s' && pnpm build && pnpm publish --otp $(op read 'op://Personal/Npmjs/one-time password?attribute=otp')"
+		"release": "bumpp --commit 'Release: %s' && pnpm run build && pnpm publish --otp $(op read 'op://Personal/Npmjs/one-time password?attribute=otp')"
 	},
 	"dependencies": {
 		"@types/fs-extra": "^11.0.4",
 		"@types/yargs": "^17.0.33",
 		"bunnycdn-stream": "^2.4.0",
-		"execa": "^8.0.1",
+		"execa": "^9.3.1",
 		"ffmpeg-static": "^5.2.0",
 		"fs-extra": "^11.2.0",
 		"hasha": "^6.0.0",
@@ -66,15 +60,14 @@
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
-		"@kitschpatrol/shared-config": "^4.7.5",
-		"@types/node": "^20.16.5",
+		"@kitschpatrol/shared-config": "^4.7.9",
+		"@types/node": "18.0.0",
 		"bumpp": "^9.5.2",
 		"chalk": "^5.3.0",
 		"lowdb": "^7.0.1",
-		"pkgroll": "^2.4.2",
+		"pkgroll": "^2.5.0",
 		"pretty-ms": "^9.1.0",
-		"rimraf": "^6.0.1",
-		"typescript": "^5.5.4",
+		"typescript": "^5.6.2",
 		"untildify": "^5.0.0"
 	},
 	"publishConfig": {
