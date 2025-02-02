@@ -1,6 +1,6 @@
 {
 	"name": "vidup",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"type": "module",
 	"description": "Synchronize a local directory of video files to remote streaming services.",
 	"repository": "github:kitschpatrol/vidup",
