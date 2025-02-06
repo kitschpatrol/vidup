@@ -3,6 +3,9 @@ import ffmpegPath from 'ffmpeg-static'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+/**
+ * Bla
+ */
 export async function getVideosInDirectory(directory: string): Promise<string[]> {
 	// Get local file list
 	const files = await fs.readdir(directory)
@@ -16,6 +19,9 @@ export async function getVideosInDirectory(directory: string): Promise<string[]>
 	return videoFiles
 }
 
+/**
+ * Bla
+ */
 export async function videoHasMetadata(filename: string): Promise<boolean> {
 	if (ffmpegPath === null) {
 		throw new Error('ffmpeg-static failed to locate ffmpeg binary')
@@ -30,6 +36,9 @@ export async function videoHasMetadata(filename: string): Promise<boolean> {
 	}
 }
 
+/**
+ * Bla
+ */
 export async function stripVideoMetadata(filename: string): Promise<void> {
 	if (ffmpegPath === null) {
 		throw new Error('ffmpeg-static failed to locate ffmpeg binary')

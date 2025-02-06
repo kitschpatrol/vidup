@@ -28,7 +28,7 @@ export async function stripVideoMetadataInDirectory(
  * Strip metadata from multiple video files
  * @returns List of file paths with metadata that were stripped
  */
-export async function stripVideoMetadataInFiles(
+async function stripVideoMetadataInFiles(
 	files: string[],
 	options: StripOptions = {},
 ): Promise<string[]> {

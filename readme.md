@@ -19,7 +19,7 @@
 
 <!-- /short-description -->
 
-> \[!WARNING]\
+> [!WARNING]
 > This tool was built in haste and has been tested only against a relatively narrow use-case. If you use it, please review the docs, invoke with care, and make sure you have local copies of your remote videos and metadata.
 
 ## Overview
@@ -123,7 +123,7 @@ vidup sync <directory> [options]
 
 <!-- /cli-help -->
 
-#### Examples
+#### CLI Examples
 
 **Synchronize video files in the current folder to Bunny Stream:**
 
@@ -160,13 +160,13 @@ The library exports `syncVideoInDirectory`, which takes an options argument mirr
 async function syncVideoInDirectory(
   directory: string,
   options: {
-    service: Service
     credentials: {
       key: string
       library: string
     }
-    dryRun?: boolean // defaults to false
-    verbose?: boolean // defaults to false
+    dryRun?: boolean // Defaults to false
+    service: Service
+    verbose?: boolean // Defaults to false
   },
 ): Promise<SyncReport>
 ```
@@ -177,23 +177,23 @@ A `stripVideoMetadataInDirectory` function is also exported, which will remove m
 export async function stripVideoMetadataInFiles(
   directory: string,
   options: {
-    dryRun?: boolean // defaults to false
-    verbose?: boolean // defaults to false
+    dryRun?: boolean // Defaults to false
+    verbose?: boolean // Defaults to false
   },
 ): Promise<string[]>
 ```
 
-#### Examples
+#### API Examples
 
 ```ts
 import { syncVideoInDirectory } from 'vidup'
 
 const syncReport = await syncVideoInDirectory(process.cwd(), {
-  service: 'bunny',
   credentials: {
     key: BUNNY_API_KEY,
     library: BUNNY_LIBRARY_ID,
   },
+  service: 'bunny',
 })
 
 console.log(JSON.stringify(syncReport, undefined, 2))

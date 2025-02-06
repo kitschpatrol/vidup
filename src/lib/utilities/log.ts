@@ -4,7 +4,8 @@
 import chalk from 'chalk'
 import { oraPromise } from 'ora'
 
-const isNode = process?.versions?.node !== undefined
+// eslint-disable-next-line ts/no-unnecessary-condition
+const isNode = process.versions.node !== undefined
 
 const log = {
 	verbose: false,

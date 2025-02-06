@@ -3,23 +3,52 @@
 	"explorer.fileNesting.expand": false,
 	"explorer.fileNesting.patterns": {
 		".env": ".env.*",
-		"package.json": ".*.ts, .*.js, .*.json, .*.cjs, .*rc, .*ignore, pnpm-lock.yaml, pnpm-workspace.yaml",
-		"readme.md": "license*, changelog*"
+		"package.json": ".*.cjs, .*.js, .*.json, .*.mjs, .*.toml, .*.ts, .*.yaml, .*.yml, .*ignore, .*rc, *config.cjs, *config.js, *config.json, *config.mjs, *config.toml, *config.ts, *config.yaml, *config.yml, lerna.json, netlify.toml, package-lock.json, , pnpm*, turbo.json, vercel.json, workspace*, wrangler.toml, yarn.lock, yarn*",
+		"readme.md": "authors*, backers*, changelog*, citation*, code_of_conduct*, contributing*, contributors*, copying*, credits*, governance*, history*, license*, maintainers*, release_notes*, security*, sponsors*"
 	},
-	"cSpell.enabled": true,
-	"cSpell.workspaceRootPath": ".",
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"typescript.enablePromptUseWorkspaceTsdk": true,
 	"editor.codeActionsOnSave": {
-		"source.fixAll": "explicit"
+		"source.fixAll": "explicit",
+		"source.organizeImports": "never"
 	},
 	"eslint.enable": true,
-	"eslint.validate": ["javascript", "markdown", "mdx", "typescript"],
-	"typescript.tsdk": "node_modules/typescript/lib",
-
+	"eslint.runtime": "node",
+	"eslint.validate": [
+		"astro",
+		"html",
+		"javascript",
+		"javascriptreact",
+		"json",
+		"json5",
+		"jsonc",
+		"markdown",
+		"mdx",
+		"svelte",
+		"toml",
+		"typescript",
+		"typescriptreact",
+		"xml",
+		"yaml"
+	],
+	"eslint.useFlatConfig": true,
+	"stylelint.enable": true,
+	"stylelint.validate": ["css", "html", "svelte", "astro"],
+	"cSpell.enabled": true,
+	"cSpell.workspaceRootPath": ".",
+	"[astro]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
 	"[gitignore]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
-
+	"[ruby]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
 	"[shellscript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[svelte]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -28,7 +57,10 @@
 		"**/.eslintignore",
 		"**/.node-version",
 		"**/.npmrc",
-		"**/.prettierignore"
+		"**/.prettierignore",
+		"**/*.astro",
+		"**/*.rb",
+		"**/*.svelte"
 	],
 	"prettier.enable": true
 }

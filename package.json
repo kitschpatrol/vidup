@@ -1,37 +1,7 @@
 {
 	"name": "vidup",
 	"version": "1.0.7",
-	"type": "module",
 	"description": "Synchronize a local directory of video files to remote streaming services.",
-	"repository": "github:kitschpatrol/vidup",
-	"homepage": "https://github.com/kitschpatrol/vidup",
-	"bugs": "https://github.com/kitschpatrol/vidup/issues",
-	"author": {
-		"name": "Eric Mika",
-		"email": "eric@ericmika.com",
-		"url": "https://ericmika.com"
-	},
-	"license": "MIT",
-	"packageManager": "pnpm@9.15.4",
-	"engines": {
-		"node": ">=18.0.0",
-		"pnpm": ">=9.0.0"
-	},
-	"bin": {
-		"vidup": "dist/bin/cli.js"
-	},
-	"main": "./dist/lib/index.js",
-	"module": "./dist/lib/index.js",
-	"exports": {
-		".": {
-			"import": "./dist/lib/index.js",
-			"types": "./dist/lib/index.d.ts"
-		}
-	},
-	"types": "./dist/lib/index.d.ts",
-	"files": [
-		"dist/*"
-	],
 	"keywords": [
 		"bunnycdn-stream",
 		"bunnycdn",
@@ -41,36 +11,115 @@
 		"upload",
 		"video"
 	],
+	"homepage": "https://github.com/kitschpatrol/vidup",
+	"bugs": "https://github.com/kitschpatrol/vidup/issues",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/github:kitschpatrol/vidup"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Eric Mika",
+		"email": "eric@ericmika.com",
+		"url": "https://ericmika.com"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./dist/lib/index.js",
+			"types": "./dist/lib/index.d.ts"
+		}
+	},
+	"main": "./dist/lib/index.js",
+	"module": "./dist/lib/index.js",
+	"types": "./dist/lib/index.d.ts",
+	"bin": {
+		"vidup": "dist/bin/cli.js"
+	},
+	"files": [
+		"dist/*"
+	],
 	"scripts": {
-		"build": "pkgroll --clean-dist --minify",
+		"build": "pkgroll --clean-dist --minify --tsconfig tsconfig.build.json",
 		"clean": "git rm -f pnpm-lock.yaml ; git clean -fdX",
-		"fix": "shared-config --fix",
-		"lint": "shared-config --lint",
+		"fix": "kpi fix",
+		"lint": "kpi lint",
 		"release": "bumpp --commit 'Release: %s' && pnpm run build && pnpm publish --otp $(op read 'op://Personal/Npmjs/one-time password?attribute=otp')"
 	},
 	"dependencies": {
-		"@types/fs-extra": "^11.0.4",
 		"@types/yargs": "^17.0.33",
 		"bunnycdn-stream": "^2.4.1",
 		"execa": "^9.5.2",
 		"ffmpeg-static": "^5.2.0",
-		"fs-extra": "^11.3.0",
 		"hasha": "^6.0.0",
-		"ora": "^8.1.1",
+		"ora": "^8.2.0",
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
-		"@kitschpatrol/shared-config": "^4.7.12",
-		"@types/node": "18.0.0",
-		"bumpp": "^10.0.1",
+		"@kitschpatrol/shared-config": "^5.0.4",
+		"@types/node": "^22.13.1",
+		"bumpp": "^10.0.2",
 		"chalk": "^5.4.1",
 		"lowdb": "^7.0.1",
-		"pkgroll": "^2.6.1",
+		"pkgroll": "^2.8.0",
 		"pretty-ms": "^9.2.0",
 		"typescript": "^5.7.3",
 		"untildify": "^5.0.0"
 	},
+	"packageManager": "pnpm@10.2.1",
+	"engines": {
+		"node": ">=22.0.0",
+		"pnpm": ">=10.1.0"
+	},
 	"publishConfig": {
 		"access": "public"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"puppeteer",
+			"esbuild",
+			"ffmpeg-static"
+		],
+		"overrides": {
+			"eslint-plugin-markdown": "^5.1.0"
+		}
+	},
+	"cspell": {
+		"import": "@kitschpatrol/cspell-config"
+	},
+	"knip": {
+		"entry": [
+			"{index,cli,main}.{js,mjs,cjs,jsx,ts,tsx,mts,cts}!",
+			"src/{index,cli,main}.{js,mjs,cjs,jsx,ts,tsx,mts,cts}!",
+			"src/{bin,lib,cli}/{index,cli,main}.{js,mjs,cjs,jsx,ts,tsx,mts,cts}!",
+			"scripts/**/*.ts",
+			".remarkrc.js",
+			"cspell.config.js",
+			"eslint.config.ts",
+			"mdat.config.ts",
+			"prettier.config.js",
+			"stylelint.config.js"
+		],
+		"ignoreDependencies": [
+			"@kitschpatrol/cspell-config",
+			"@kitschpatrol/eslint-config",
+			"@kitschpatrol/knip-config",
+			"@kitschpatrol/mdat-config",
+			"@kitschpatrol/prettier-config",
+			"@kitschpatrol/remark-config",
+			"@kitschpatrol/stylelint-config"
+		]
+	},
+	"mdat": {
+		"$import": "node_modules/@kitschpatrol/mdat-config/dist/index.js"
+	},
+	"prettier": "@kitschpatrol/prettier-config",
+	"remarkConfig": {
+		"plugins": [
+			"@kitschpatrol/remark-config"
+		]
+	},
+	"stylelint": {
+		"extends": "@kitschpatrol/stylelint-config"
 	}
 }

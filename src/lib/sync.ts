@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { BunnyCdnStream } from 'bunnycdn-stream'
 import { hash } from 'hasha'
 import { JSONFilePreset as lowdb } from 'lowdb/node'
@@ -15,9 +14,7 @@ type State = {
 	syncState: Array<{
 		filename: string
 		localHash: string
-		remoteHash: {
-			[K in Service]?: null | string
-		}
+		remoteHash: Partial<Record<Service, string | undefined>>
 	}>
 }
 

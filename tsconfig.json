@@ -1,26 +1,7 @@
 {
-	"compilerOptions": {
-		"target": "ES2022",
-		"useDefineForClassFields": true,
-		"lib": ["ES2022", "DOM", "DOM.Iterable"],
-		"module": "ESNext",
-		"skipLibCheck": true,
-		"noEmit": true,
-		"noErrorTruncation": true,
+	"extends": "@kitschpatrol/typescript-config",
 
-		/* Bundler mode */
-		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true,
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-
-		/* Linting */
-		"strict": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"noFallthroughCasesInSwitch": true
-	},
-
-	"include": ["**/*"],
-	"exclude": ["dist/"]
+	// Includes project dit-files files for typescript-eslint integration
+	"include": ["**/*", "**/**.*"],
+	"exclude": ["**/dist/", "**/bin/"]
 }
