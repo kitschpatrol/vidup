@@ -34,7 +34,7 @@ Currently, only Bunny.net's [Bunny Stream](https://bunny.net/stream/) service is
 
 ### Dependencies
 
-The vidup CLI tool requires Node 18+. The exported APIs are ESM-only and share the Node 18+ requirement. Vidup is implemented in TypeScript and bundles type definitions.
+The vidup CLI tool requires Node 20.9.0+. The exported APIs are ESM-only and share the Node 20.9.0+ requirement. Vidup is implemented in TypeScript and bundles type definitions.
 
 A [Bunny Stream](https://bunny.net/stream/) account, API key, and library ID are required.
 
