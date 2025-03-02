@@ -82,43 +82,5 @@
 		"overrides": {
 			"eslint-plugin-markdown": "^5.1.0"
 		}
-	},
-	"cspell": {
-		"import": "@kitschpatrol/cspell-config"
-	},
-	"knip": {
-		"entry": [
-			"{index,cli,main}.{js,mjs,cjs,jsx,ts,tsx,mts,cts}!",
-			"src/{index,cli,main}.{js,mjs,cjs,jsx,ts,tsx,mts,cts}!",
-			"src/{bin,lib,cli}/{index,cli,main}.{js,mjs,cjs,jsx,ts,tsx,mts,cts}!",
-			"scripts/**/*.ts",
-			".remarkrc.js",
-			"cspell.config.js",
-			"eslint.config.ts",
-			"mdat.config.ts",
-			"prettier.config.js",
-			"stylelint.config.js"
-		],
-		"ignoreDependencies": [
-			"@kitschpatrol/cspell-config",
-			"@kitschpatrol/eslint-config",
-			"@kitschpatrol/knip-config",
-			"@kitschpatrol/mdat-config",
-			"@kitschpatrol/prettier-config",
-			"@kitschpatrol/remark-config",
-			"@kitschpatrol/stylelint-config"
-		]
-	},
-	"mdat": {
-		"$import": "node_modules/@kitschpatrol/mdat-config/dist/index.js"
-	},
-	"prettier": "@kitschpatrol/prettier-config",
-	"remarkConfig": {
-		"plugins": [
-			"@kitschpatrol/remark-config"
-		]
-	},
-	"stylelint": {
-		"extends": "@kitschpatrol/stylelint-config"
 	}
 }
