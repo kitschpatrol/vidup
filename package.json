@@ -56,7 +56,7 @@
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
-		"@kitschpatrol/shared-config": "^5.0.7",
+		"@kitschpatrol/shared-config": "^5.0.8",
 		"@types/node": "^20.17.22",
 		"bumpp": "^10.0.3",
 		"chalk": "^5.4.1",
