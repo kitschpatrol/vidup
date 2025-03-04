@@ -1,6 +1,6 @@
 {
 	"name": "vidup",
-	"version": "1.0.11",
+	"version": "1.0.12",
 	"description": "Synchronize a local directory of video files to remote streaming services.",
 	"keywords": [
 		"bunnycdn-stream",
