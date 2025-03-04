@@ -15,7 +15,7 @@
 	"bugs": "https://github.com/kitschpatrol/vidup/issues",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/kitschpatrol/vidup"
+		"url": "git+https://github.com/kitschpatrol/vidup.git"
 	},
 	"license": "MIT",
 	"author": {
@@ -56,14 +56,14 @@
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
-		"@kitschpatrol/shared-config": "^5.0.8",
-		"@types/node": "^20.17.22",
+		"@kitschpatrol/shared-config": "^5.2.0",
+		"@types/node": "^20.17.23",
 		"bumpp": "^10.0.3",
 		"chalk": "^5.4.1",
 		"lowdb": "^7.0.1",
 		"pkgroll": "^2.11.2",
 		"pretty-ms": "^9.2.0",
-		"typescript": "^5.7.3",
+		"typescript": "^5.8.2",
 		"untildify": "^5.0.0"
 	},
 	"packageManager": "pnpm@10.5.2",
