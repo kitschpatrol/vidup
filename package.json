@@ -40,47 +40,37 @@
 		"dist/*"
 	],
 	"scripts": {
-		"build": "pkgroll --clean-dist --minify --tsconfig tsconfig.build.json",
+		"build": "pkgroll --clean-dist --tsconfig tsconfig.build.json",
 		"clean": "git rm -f pnpm-lock.yaml ; git clean -fdX",
-		"fix": "kpi fix",
-		"lint": "kpi lint",
+		"fix": "ksc fix",
+		"lint": "ksc lint",
 		"release": "bumpp --commit 'Release: %s' && pnpm run build && pnpm publish --otp $(op read 'op://Personal/Npmjs/one-time password?attribute=otp')"
 	},
 	"dependencies": {
 		"@types/yargs": "^17.0.33",
-		"bunnycdn-stream": "^2.4.1",
-		"execa": "^9.5.2",
+		"bunnycdn-stream": "^2.5.5",
+		"execa": "^9.6.0",
 		"ffmpeg-static": "^5.2.0",
-		"hasha": "^6.0.0",
-		"ora": "^8.2.0",
+		"hasha": "^7.0.0",
+		"ora": "^9.0.0",
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
-		"@kitschpatrol/shared-config": "^5.2.0",
-		"@types/node": "^20.17.23",
-		"bumpp": "^10.0.3",
-		"chalk": "^5.4.1",
+		"@kitschpatrol/shared-config": "^5.7.1",
+		"@types/node": "^20.19.19",
+		"bumpp": "^10.2.3",
 		"lowdb": "^7.0.1",
-		"pkgroll": "^2.11.2",
-		"pretty-ms": "^9.2.0",
-		"typescript": "^5.8.2",
-		"untildify": "^5.0.0"
+		"picocolors": "^1.1.1",
+		"pkgroll": "^2.16.0",
+		"pretty-ms": "^9.3.0",
+		"typescript": "^5.9.3",
+		"untildify": "^6.0.0"
 	},
-	"packageManager": "pnpm@10.5.2",
+	"packageManager": "pnpm@10.18.0",
 	"engines": {
-		"node": ">=20.9.0"
+		"node": ">=20.19.0"
 	},
 	"publishConfig": {
 		"access": "public"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"puppeteer",
-			"esbuild",
-			"ffmpeg-static"
-		],
-		"overrides": {
-			"eslint-plugin-markdown": "^5.1.0"
-		}
 	}
 }
