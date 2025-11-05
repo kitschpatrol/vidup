@@ -26,8 +26,8 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./dist/lib/index.js",
-			"types": "./dist/lib/index.d.ts"
+			"types": "./dist/lib/index.d.ts",
+			"import": "./dist/lib/index.js"
 		}
 	},
 	"main": "./dist/lib/index.js",
@@ -44,10 +44,10 @@
 		"clean": "git rm -f pnpm-lock.yaml ; git clean -fdX",
 		"fix": "ksc fix",
 		"lint": "ksc lint",
-		"release": "bumpp --commit 'Release: %s' && pnpm run build && pnpm publish --otp $(op read 'op://Personal/Npmjs/one-time password?attribute=otp')"
+		"release": "bumpp --commit 'Release: %s' && pnpm run build && NPM_AUTH_TOKEN=$(op read 'op://Personal/npm/token') && pnpm publish"
 	},
 	"dependencies": {
-		"@types/yargs": "^17.0.33",
+		"@types/yargs": "^17.0.34",
 		"bunnycdn-stream": "^2.5.5",
 		"execa": "^9.6.0",
 		"ffmpeg-static": "^5.2.0",
@@ -56,17 +56,18 @@
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
-		"@kitschpatrol/shared-config": "^5.7.1",
-		"@types/node": "^20.19.19",
-		"bumpp": "^10.2.3",
+		"@kitschpatrol/shared-config": "^5.8.1",
+		"@types/node": "^20.19.24",
+		"bumpp": "^10.3.1",
 		"lowdb": "^7.0.1",
+		"mdat-plugin-cli-help": "^1.0.1",
 		"picocolors": "^1.1.1",
-		"pkgroll": "^2.16.0",
+		"pkgroll": "^2.20.1",
 		"pretty-ms": "^9.3.0",
 		"typescript": "^5.9.3",
 		"untildify": "^6.0.0"
 	},
-	"packageManager": "pnpm@10.18.0",
+	"packageManager": "pnpm@10.20.0",
 	"engines": {
 		"node": ">=20.19.0"
 	},

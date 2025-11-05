@@ -1,5 +1,4 @@
 onlyBuiltDependencies:
   - esbuild
   - ffmpeg-static
-  - puppeteer
   - unrs-resolver
