@@ -56,11 +56,11 @@
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
-		"@kitschpatrol/shared-config": "^5.8.1",
+		"@kitschpatrol/shared-config": "^5.8.2",
 		"@types/node": "^20.19.24",
 		"bumpp": "^10.3.1",
 		"lowdb": "^7.0.1",
-		"mdat-plugin-cli-help": "^1.0.1",
+		"mdat-plugin-cli-help": "^1.0.2",
 		"picocolors": "^1.1.1",
 		"pkgroll": "^2.20.1",
 		"pretty-ms": "^9.3.0",
