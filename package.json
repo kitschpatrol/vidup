@@ -23,6 +23,7 @@
 		"email": "eric@ericmika.com",
 		"url": "https://ericmika.com"
 	},
+	"sideEffects": false,
 	"type": "module",
 	"exports": {
 		".": {
@@ -44,7 +45,8 @@
 		"clean": "git rm -f pnpm-lock.yaml ; git clean -fdX",
 		"fix": "ksc fix",
 		"lint": "ksc lint",
-		"release": "bumpp --commit 'Release: %s' && pnpm run build && NPM_AUTH_TOKEN=$(op read 'op://Personal/npm/token') && pnpm publish"
+		"release": "bumpp --commit 'Release: %s' && pnpm run build && NPM_AUTH_TOKEN=$(op read 'op://Personal/npm/token') && pnpm publish",
+		"test": "vitest run"
 	},
 	"dependencies": {
 		"@types/yargs": "^17.0.35",
@@ -52,23 +54,30 @@
 		"execa": "^9.6.1",
 		"ffmpeg-static": "^5.3.0",
 		"hasha": "^7.0.0",
-		"ora": "^9.0.0",
+		"ora": "^9.3.0",
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
-		"@kitschpatrol/shared-config": "^5.10.0",
-		"@types/node": "^20.19.25",
-		"bumpp": "^10.3.2",
+		"@kitschpatrol/shared-config": "^7.1.0",
+		"@types/node": "^20.19.39",
+		"bumpp": "^11.0.1",
 		"lowdb": "^7.0.1",
-		"mdat-plugin-cli-help": "^1.0.4",
+		"mdat-plugin-cli-help": "^2.0.2",
 		"picocolors": "^1.1.1",
-		"pkgroll": "^2.21.4",
+		"pkgroll": "^2.27.0",
 		"pretty-ms": "^9.3.0",
 		"typescript": "^5.9.3",
-		"untildify": "^6.0.0"
+		"untildify": "^6.0.0",
+		"vitest": "^4.1.2"
 	},
-	"packageManager": "pnpm@10.25.0",
+	"packageManager": "pnpm@10.33.0",
 	"engines": {
 		"node": ">=20.19.0"
+	},
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"version": ">=22.18.0"
+		}
 	}
 }
