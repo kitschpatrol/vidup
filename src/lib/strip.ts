@@ -8,6 +8,7 @@ export type StripOptions = {
 
 /**
  * Strip metadata from video files in a directory
+ *
  * @returns List of file paths with metadata that were stripped
  */
 export async function stripVideoMetadataInDirectory(
@@ -26,6 +27,7 @@ export async function stripVideoMetadataInDirectory(
 
 /**
  * Strip metadata from multiple video files
+ *
  * @returns List of file paths with metadata that were stripped
  */
 async function stripVideoMetadataInFiles(

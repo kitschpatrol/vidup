@@ -42,10 +42,10 @@
 	],
 	"scripts": {
 		"build": "tsdown",
-		"clean": "git rm -f pnpm-lock.yaml ; git clean -fdX",
+		"clean": "shx rm -f pnpm-lock.yaml && git clean -fdX -e !.claude/",
 		"fix": "ksc fix",
 		"lint": "ksc lint",
-		"release": "bumpp --commit 'Release: %s' && pnpm run build && NPM_AUTH_TOKEN=$(op read 'op://Personal/npm/token') && pnpm publish",
+		"release": "bumpp --commit 'Release: %s' && pnpm build && NPM_AUTH_TOKEN=$(op read 'op://Personal/npm/token') pnpm publish",
 		"test": "vitest run"
 	},
 	"dependencies": {
@@ -55,7 +55,7 @@
 		"ffmpeg-static": "^5.3.0",
 		"hasha": "^7.0.0",
 		"lowdb": "^7.0.1",
-		"ora": "^9.3.0",
+		"ora": "^9.4.0",
 		"picocolors": "^1.1.1",
 		"pretty-ms": "^9.3.0",
 		"untildify": "^6.0.0",
@@ -63,16 +63,17 @@
 	},
 	"devDependencies": {
 		"@arethetypeswrong/core": "^0.18.2",
-		"@kitschpatrol/shared-config": "^7.1.0",
-		"@types/node": "^20.19.39",
-		"bumpp": "^11.0.1",
-		"mdat-plugin-cli-help": "^2.0.2",
-		"publint": "^0.3.18",
-		"tsdown": "^0.21.7",
+		"@kitschpatrol/shared-config": "^7.6.0",
+		"@types/node": "^20.19.41",
+		"bumpp": "^11.1.0",
+		"mdat-plugin-cli-help": "^3.0.0",
+		"publint": "^0.3.21",
+		"shx": "^0.4.0",
+		"tsdown": "^0.22.0",
 		"typescript": "^5.9.3",
-		"vitest": "^4.1.2"
+		"vitest": "^4.1.6"
 	},
-	"packageManager": "pnpm@10.33.0",
+	"packageManager": "pnpm@11.1.2",
 	"engines": {
 		"node": ">=20.19.0"
 	},

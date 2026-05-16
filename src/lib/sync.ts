@@ -36,8 +36,11 @@ export type SyncOptions = {
 }
 
 /**
- * Synchronize a remote streaming service to mirror the contents of a local directory
- * @returns Array of sync report entries describing what was changed (or will change if a dry run)
+ * Synchronize a remote streaming service to mirror the contents of a local
+ * directory
+ *
+ * @returns Array of sync report entries describing what was changed (or will
+ *   change if a dry run)
  */
 // eslint-disable-next-line complexity
 export async function syncVideoInDirectory(
@@ -156,7 +159,10 @@ export async function syncVideoInDirectory(
 		// Delete remote
 		// Fastest, do this first
 		for (const [index, remoteVideo] of remoteVideosToDelete.entries()) {
-			if (index === 0) log.info(`Deleting ${remoteVideosToDelete.length} remote videos...`)
+			if (index === 0) {
+				log.info(`Deleting ${remoteVideosToDelete.length} remote videos...`)
+			}
+
 			const deleteResponse = await log.infoSpin(
 				stream.deleteVideo(remoteVideo.guid),
 				`Deleting remote video ${index + 1}/${remoteVideosToDelete.length}: ${remoteVideo.title}`,
@@ -173,7 +179,9 @@ export async function syncVideoInDirectory(
 		// Create / Upload
 		// New data, do this second
 		for (const [index, localVideo] of remoteVideosToCreate.entries()) {
-			if (index === 0) log.info(`Uploading ${remoteVideosToCreate.length} new local videos...`)
+			if (index === 0) {
+				log.info(`Uploading ${remoteVideosToCreate.length} new local videos...`)
+			}
 
 			const videoFile = createReadStream(path.join(directory, localVideo.filename))
 			const response = await log.infoSpin(
