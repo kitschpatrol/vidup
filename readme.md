@@ -6,8 +6,8 @@
 
 <!-- badges -->
 
-[![NPM Package vidup](https://img.shields.io/npm/v/vidup.svg)](https://npmjs.com/package/vidup)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit/)
+[![NPM Package vidup](https://img.shields.io/npm/v/vidup.svg)](https://www.npmjs.com/package/vidup)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
 [![CI](https://github.com/kitschpatrol/vidup/actions/workflows/ci.yml/badge.svg)](https://github.com/kitschpatrol/vidup/actions/workflows/ci.yml)
 
 <!-- /badges -->
@@ -206,7 +206,6 @@ Video streaming providers have slow and clunky web UIs. I'd rather not maintain 
 
 ## The future
 
-- [ ] Tests
 - [ ] Add [Cosmiconfig](https://github.com/cosmiconfig/cosmiconfig)
 - [ ] Synchronize thumbnails and other metadata
 - [ ] Remote collection / folder support

@@ -1,6 +1,4 @@
 {
-	"extends": "@kitschpatrol/typescript-config",
-
-	"include": ["src"],
-	"exclude": ["**/dist/", "**/bin/"]
+	"extends": "./tsconfig.json",
+	"include": ["src/"]
 }

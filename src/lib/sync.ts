@@ -112,8 +112,8 @@ export async function syncVideoInDirectory(
 		})
 	}
 
-	const remoteVideosToCreate = state.data.syncState.filter(
-		(entry) => !remoteVideos.some((video) => video.title === entry.filename),
+	const remoteVideosToCreate = state.data.syncState.filter((entry) =>
+		remoteVideos.every((video) => video.title !== entry.filename),
 	)
 
 	// Sync report will be updated with GUIDs after upload
@@ -139,8 +139,8 @@ export async function syncVideoInDirectory(
 		})
 	}
 
-	const remoteVideosToDelete = remoteVideos.filter(
-		(video) => !state.data.syncState.some((entry) => entry.filename === video.title),
+	const remoteVideosToDelete = remoteVideos.filter((video) =>
+		state.data.syncState.every((entry) => entry.filename !== video.title),
 	)
 
 	for (const video of remoteVideosToDelete) {
@@ -163,12 +163,12 @@ export async function syncVideoInDirectory(
 				log.info(`Deleting ${remoteVideosToDelete.length} remote videos...`)
 			}
 
-			const deleteResponse = await log.infoSpin(
+			const deletionResponse = await log.infoSpin(
 				stream.deleteVideo(remoteVideo.guid),
 				`Deleting remote video ${index + 1}/${remoteVideosToDelete.length}: ${remoteVideo.title}`,
 			)
 
-			if (!deleteResponse.success) {
+			if (!deletionResponse.success) {
 				throw new Error(`Failed to delete remote video: ${remoteVideo.title}`)
 			}
 
@@ -229,19 +229,19 @@ export async function syncVideoInDirectory(
 				throw new Error(`Failed to find state entry for: ${remoteVideo.title}`)
 			}
 
-			const deleteResponse = await stream.deleteVideo(remoteVideo.guid)
-			if (!deleteResponse.success) {
+			const deletionResponse = await stream.deleteVideo(remoteVideo.guid)
+			if (!deletionResponse.success) {
 				throw new Error(`Failed to delete remote video before updating: ${remoteVideo.title}`)
 			}
 
 			const videoFile = createReadStream(path.join(directory, stateEntry.filename))
-			const createResponse = await log.infoSpin(
+			const creationResponse = await log.infoSpin(
 				stream.createAndUploadVideo(videoFile, { title: stateEntry.filename }),
 				`Updating remote video ${index + 1}/${remoteVideosToUpdate.length}: ${remoteVideo.title}`,
 			)
 
 			log.info(
-				`Updated remote video ${index + 1}/${remoteVideosToUpdate.length} created with GUID: ${createResponse.guid}`,
+				`Updated remote video ${index + 1}/${remoteVideosToUpdate.length} created with GUID: ${creationResponse.guid}`,
 			)
 
 			stateEntry.remoteHash[service] = stateEntry.localHash
@@ -253,7 +253,7 @@ export async function syncVideoInDirectory(
 				throw new Error(`Failed to find report entry for: ${stateEntry.filename}`)
 			}
 
-			reportEntry.remoteId = createResponse.guid
+			reportEntry.remoteId = creationResponse.guid
 		}
 
 		log.info(`All ${videoFiles.length} videos are now in sync!`)

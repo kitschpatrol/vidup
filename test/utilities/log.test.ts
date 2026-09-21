@@ -51,14 +51,12 @@ describe('log', () => {
 
 		it('log() outputs to console.warn', () => {
 			log.log('hello')
-			expect(warnSpy).toHaveBeenCalledOnce()
-			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[Log]'), 'hello')
+			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(expect.stringContaining('[Log]'), 'hello')
 		})
 
 		it('info() outputs to console.warn', () => {
 			log.info('hello')
-			expect(warnSpy).toHaveBeenCalledOnce()
-			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[Info]'), 'hello')
+			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(expect.stringContaining('[Info]'), 'hello')
 		})
 	})
 

@@ -39,7 +39,7 @@ const { syncVideoInDirectory } = await import('../src/lib/sync')
 
 // Hash mock — sync.ts treats hashes as strings
 const { hash: mockedHash } = await import('hasha')
-// eslint-disable-next-line ts/no-unsafe-type-assertion
+
 const typedMockedHash = mockedHash as unknown as { mockResolvedValueOnce: (v: string) => void }
 
 const defaultOptions = {
@@ -179,8 +179,8 @@ describe('syncVideoInDirectory', () => {
 				dryRun: true,
 			})
 
-			const createEntry = report.find((r) => r.action === 'Create')
-			expect(createEntry?.remoteId).toBe('Not yet uploaded (Dry run)')
+			const createdEntry = report.find((r) => r.action === 'Create')
+			expect(createdEntry?.remoteId).toBe('Not yet uploaded (Dry run)')
 		})
 	})
 
@@ -203,8 +203,8 @@ describe('syncVideoInDirectory', () => {
 				title: 'new.mp4',
 			})
 
-			const createEntry = report.find((r) => r.action === 'Create')
-			expect(createEntry?.remoteId).toBe('new-guid-123')
+			const createdEntry = report.find((r) => r.action === 'Create')
+			expect(createdEntry?.remoteId).toBe('new-guid-123')
 		})
 
 		it('updates changed videos by delete then re-upload', async () => {

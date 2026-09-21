@@ -4,7 +4,10 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 /**
- * Bla
+ * List the video files directly inside a directory. Matches by extension (.mp4,
+ * .mov, .avi, .mkv) and does not recurse into subdirectories.
+ *
+ * @returns Absolute paths to the matching files
  */
 export async function getVideosInDirectory(directory: string): Promise<string[]> {
 	// Get local file list
@@ -20,7 +23,9 @@ export async function getVideosInDirectory(directory: string): Promise<string[]>
 }
 
 /**
- * Bla
+ * Check whether a video file carries a `creation_time` metadata tag by
+ * exporting its metadata with ffmpeg. Throws if the ffmpeg binary is
+ * unavailable or the ffmpeg run fails.
  */
 export async function videoHasMetadata(filename: string): Promise<boolean> {
 	if (ffmpegPath === null) {
@@ -32,12 +37,17 @@ export async function videoHasMetadata(filename: string): Promise<boolean> {
 		const { stderr, stdout } = await execa(ffmpegPath, ['-i', filename, '-f', 'ffmetadata', '-'])
 		return stdout.includes('creation_time') || stderr.includes('creation_time')
 	} catch (error) {
-		throw new Error(`Failed to check metadata for: ${filename}:\n${String(error)}`)
+		throw new Error(`Failed to check metadata for: ${filename}:\n${String(error)}`, {
+			cause: error,
+		})
 	}
 }
 
 /**
- * Bla
+ * Remove all metadata from a video file in place. Rewrites the file with ffmpeg
+ * using stream copy (no re-encoding) into a temporary sibling file, then
+ * replaces the original. Throws if the ffmpeg binary is unavailable or the
+ * ffmpeg run or rename fails.
  */
 export async function stripVideoMetadata(filename: string): Promise<void> {
 	if (ffmpegPath === null) {
@@ -65,6 +75,8 @@ export async function stripVideoMetadata(filename: string): Promise<void> {
 		// Replace the original file with the modified one
 		await fs.rename(temporaryFilename, filename)
 	} catch (error) {
-		throw new Error(`Failed to strip metadata from: ${filename}:\n${String(error)}`)
+		throw new Error(`Failed to strip metadata from: ${filename}:\n${String(error)}`, {
+			cause: error,
+		})
 	}
 }

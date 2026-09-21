@@ -1,3 +1,8 @@
+allowBuilds:
+  ffmpeg-static: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - yargs@18.2.0
 publicHoistPattern:
   - '@kitschpatrol/repo-config'
   - '@kitschpatrol/typescript-config'
@@ -9,7 +14,3 @@ publicHoistPattern:
   - '*prettier*'
   - '*remark*'
   - '*stylelint*'
-allowBuilds:
-  esbuild: true
-  ffmpeg-static: true
-  unrs-resolver: true

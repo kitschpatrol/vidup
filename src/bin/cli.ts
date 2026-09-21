@@ -6,7 +6,7 @@ import untildify from 'untildify'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { version } from '../../package.json'
-import { log, type Service, stripVideoMetadataInDirectory, syncVideoInDirectory } from '../lib'
+import { log, stripVideoMetadataInDirectory, syncVideoInDirectory } from '../lib'
 
 const startTime = performance.now()
 const yargsInstance = yargs(hideBin(process.argv))
@@ -18,8 +18,8 @@ await yargsInstance
 	.command(
 		['$0 <directory> [options]', 'sync <directory> [options]'],
 		'Synchronize a remote video streaming service to mirror the contents of a local directory. Warning: This command will irrevocably delete remote videos that are not present in the local directory.',
-		(yargs) =>
-			yargs
+		(builder) =>
+			builder
 				.positional('directory', {
 					default: undefined,
 					demandOption: true,
@@ -102,7 +102,7 @@ await yargsInstance
 					library,
 				},
 				dryRun,
-				service: service as Service,
+				service,
 				verbose,
 			})
 

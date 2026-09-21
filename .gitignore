@@ -10,6 +10,8 @@
 .eslint-config-inspector
 .pnpm-store/
 .svelte-kit/
+.vitest/
+.worktrees/
 {tmp,temp}/
 **/*.min.js
 /scratch/
@@ -21,4 +23,4 @@ node_modules/
 vendor/
 
 # Customizations
-.claude
+.claude/
