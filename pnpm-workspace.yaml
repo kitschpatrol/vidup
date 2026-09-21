@@ -3,6 +3,7 @@ allowBuilds:
   unrs-resolver: true
 minimumReleaseAgeExclude:
   - yargs@18.2.0
+  - lognow@0.8.4
 publicHoistPattern:
   - '@kitschpatrol/repo-config'
   - '@kitschpatrol/typescript-config'

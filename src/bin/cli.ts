@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
+import { log, setDefaultLogOptions } from 'lognow'
 import path from 'node:path'
 import prettyMilliseconds from 'pretty-ms'
 import untildify from 'untildify'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { version } from '../../package.json'
-import { log, stripVideoMetadataInDirectory, syncVideoInDirectory } from '../lib'
+import { version } from '../../package.json' with { type: 'json' }
+import { setLogger, stripVideoMetadataInDirectory, syncVideoInDirectory } from '../lib'
+
+setLogger(log)
 
 const startTime = performance.now()
 const yargsInstance = yargs(hideBin(process.argv))
@@ -67,7 +70,7 @@ await yargsInstance
 				.option('verbose', {
 					default: false,
 					describe:
-						'Enable verbose logging. All verbose logs and prefixed with their log level and are printed to `stderr` for ease of redirection.',
+						'Enable verbose logging. All verbose logs are prefixed with their log level and are printed to `stderr` for ease of redirection.',
 					type: 'boolean',
 				})
 				.check((argv) => {
@@ -80,10 +83,10 @@ await yargsInstance
 					)
 				}),
 		async ({ directory, dryRun, json, key, library, service, stripMetadata, verbose }) => {
-			log.verbose = verbose
+			setDefaultLogOptions({ verbose })
 			const resolvedDirectory = path.resolve(untildify(directory))
 
-			log.info('Starting video synchronization...')
+			log.debug('Starting video synchronization...')
 
 			if (dryRun) {
 				log.warn(`Dry run enabled, not making any changes`)
@@ -92,7 +95,6 @@ await yargsInstance
 			const stripReport: string[] = stripMetadata
 				? await stripVideoMetadataInDirectory(resolvedDirectory, {
 						dryRun,
-						verbose,
 					})
 				: []
 
@@ -103,7 +105,6 @@ await yargsInstance
 				},
 				dryRun,
 				service,
-				verbose,
 			})
 
 			if (json) {
@@ -127,7 +128,7 @@ await yargsInstance
 				}
 			}
 
-			log.info(`Synchronized video in ${prettyMilliseconds(performance.now() - startTime)}`)
+			log.debug(`Synchronized video in ${prettyMilliseconds(performance.now() - startTime)}`)
 			process.exitCode = 0
 		},
 	)

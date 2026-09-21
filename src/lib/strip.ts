@@ -1,9 +1,8 @@
-import log from './utilities/log'
+import { log } from './log'
 import { getVideosInDirectory, stripVideoMetadata, videoHasMetadata } from './utilities/video'
 
 export type StripOptions = {
 	dryRun?: boolean
-	verbose?: boolean
 }
 
 /**
@@ -15,14 +14,8 @@ export async function stripVideoMetadataInDirectory(
 	directory: string,
 	options: StripOptions = {},
 ): Promise<string[]> {
-	const { dryRun = false, verbose = false } = options
-
 	const files = await getVideosInDirectory(directory)
-
-	return stripVideoMetadataInFiles(files, {
-		dryRun,
-		verbose,
-	})
+	return stripVideoMetadataInFiles(files, options)
 }
 
 /**
@@ -34,10 +27,7 @@ async function stripVideoMetadataInFiles(
 	files: string[],
 	options: StripOptions = {},
 ): Promise<string[]> {
-	const { dryRun = false, verbose = false } = options
-
-	const initialVerbosity = log.verbose
-	log.verbose = verbose
+	const { dryRun = false } = options
 
 	const localVideosWithMetadata = []
 	for (const videoFile of files) {
@@ -47,13 +37,12 @@ async function stripVideoMetadataInFiles(
 	}
 
 	if (!dryRun) {
-		log.info(`Found ${localVideosWithMetadata.length} videos with metadata to strip`)
+		log.debug(`Found ${localVideosWithMetadata.length} videos with metadata to strip`)
 		for (const videoFile of localVideosWithMetadata) {
-			console.log(`Stripping metadata from: ${videoFile}`)
+			log.debug(`Stripping metadata from: ${videoFile}`)
 			await stripVideoMetadata(videoFile)
 		}
 	}
 
-	log.verbose = initialVerbosity
 	return localVideosWithMetadata
 }

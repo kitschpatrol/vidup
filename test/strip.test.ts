@@ -6,14 +6,13 @@ vi.mock('../src/lib/utilities/video', () => ({
 	videoHasMetadata: vi.fn(),
 }))
 
-// Suppress log output during tests
-vi.mock('ora', () => ({
-	oraPromise: vi.fn(async (promise: Promise<unknown>) => promise),
-}))
-
 const { getVideosInDirectory, stripVideoMetadata, videoHasMetadata } =
 	await import('../src/lib/utilities/video')
 const { stripVideoMetadataInDirectory } = await import('../src/lib/strip')
+
+// Silence library logs during tests
+const { setLogger } = await import('../src/lib/log')
+setLogger()
 
 const mockedGetVideos = vi.mocked(getVideosInDirectory)
 const mockedHasMetadata = vi.mocked(videoHasMetadata)

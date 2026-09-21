@@ -3,7 +3,8 @@ import { hash } from 'hasha'
 import { JSONFilePreset as lowdb } from 'lowdb/node'
 import { createReadStream } from 'node:fs'
 import path from 'node:path'
-import log from './utilities/log'
+import { oraPromise } from 'ora'
+import { log } from './log'
 import { getVideosInDirectory } from './utilities/video'
 
 export type Service = 'bunny' | 'cloudflare' | 'mux'
@@ -32,7 +33,6 @@ export type SyncOptions = {
 	}
 	dryRun?: boolean
 	service: Service
-	verbose?: boolean
 }
 
 /**
@@ -47,15 +47,12 @@ export async function syncVideoInDirectory(
 	directory: string,
 	options: SyncOptions,
 ): Promise<SyncReport> {
-	const { credentials, dryRun = false, service, verbose = false } = options
-
-	const initialVerbosity = log.verbose
-	log.verbose = verbose
+	const { credentials, dryRun = false, service } = options
 
 	const syncReport: SyncReport = []
 	const videoFiles = await getVideosInDirectory(directory)
 
-	log.info(`Found ${videoFiles.length} video files in directory "${directory}"`)
+	log.debug(`Found ${videoFiles.length} video files in directory "${directory}"`)
 
 	// Create a state file if it doesn't exist
 	const state = await lowdb<State>(path.join(directory, '.vidup-state.json'), {
@@ -97,7 +94,7 @@ export async function syncVideoInDirectory(
 	})
 	const remoteVideos = await stream.listAllVideos()
 
-	log.info(`Found ${remoteVideos.length} video files on ${service} remote streaming service`)
+	log.debug(`Found ${remoteVideos.length} video files on ${service} remote streaming service`)
 
 	const remoteVideosInGoodStanding = remoteVideos.filter((video) => {
 		const entry = state.data.syncState.find((entry) => entry.filename === video.title)
@@ -155,15 +152,15 @@ export async function syncVideoInDirectory(
 		state.data.lastRun = new Date()
 		await state.write()
 
-		log.info(`Synchronizing...`)
+		log.debug(`Synchronizing...`)
 		// Delete remote
 		// Fastest, do this first
 		for (const [index, remoteVideo] of remoteVideosToDelete.entries()) {
 			if (index === 0) {
-				log.info(`Deleting ${remoteVideosToDelete.length} remote videos...`)
+				log.debug(`Deleting ${remoteVideosToDelete.length} remote videos...`)
 			}
 
-			const deletionResponse = await log.infoSpin(
+			const deletionResponse = await withSpinner(
 				stream.deleteVideo(remoteVideo.guid),
 				`Deleting remote video ${index + 1}/${remoteVideosToDelete.length}: ${remoteVideo.title}`,
 			)
@@ -180,16 +177,16 @@ export async function syncVideoInDirectory(
 		// New data, do this second
 		for (const [index, localVideo] of remoteVideosToCreate.entries()) {
 			if (index === 0) {
-				log.info(`Uploading ${remoteVideosToCreate.length} new local videos...`)
+				log.debug(`Uploading ${remoteVideosToCreate.length} new local videos...`)
 			}
 
 			const videoFile = createReadStream(path.join(directory, localVideo.filename))
-			const response = await log.infoSpin(
+			const response = await withSpinner(
 				stream.createAndUploadVideo(videoFile, { title: localVideo.filename }),
 				`Uploading new video ${index + 1}/${remoteVideosToCreate.length}: ${localVideo.filename}`,
 			)
 
-			log.info(
+			log.debug(
 				`Remote video ${index + 1}/${remoteVideosToCreate.length} created with GUID: ${response.guid}`,
 			)
 
@@ -218,7 +215,7 @@ export async function syncVideoInDirectory(
 		// Note that this will change the GUID of the video!
 		for (const [index, remoteVideo] of remoteVideosToUpdate.entries()) {
 			if (index === 0) {
-				log.info(`Updating ${remoteVideosToUpdate.length} remote videos...`)
+				log.debug(`Updating ${remoteVideosToUpdate.length} remote videos...`)
 				log.warn(
 					"Bunny does not currently support updating videos in-place, so vidup will delete and re-uploading instead... this will change the video's GUID!",
 				)
@@ -235,12 +232,12 @@ export async function syncVideoInDirectory(
 			}
 
 			const videoFile = createReadStream(path.join(directory, stateEntry.filename))
-			const creationResponse = await log.infoSpin(
+			const creationResponse = await withSpinner(
 				stream.createAndUploadVideo(videoFile, { title: stateEntry.filename }),
 				`Updating remote video ${index + 1}/${remoteVideosToUpdate.length}: ${remoteVideo.title}`,
 			)
 
-			log.info(
+			log.debug(
 				`Updated remote video ${index + 1}/${remoteVideosToUpdate.length} created with GUID: ${creationResponse.guid}`,
 			)
 
@@ -256,9 +253,15 @@ export async function syncVideoInDirectory(
 			reportEntry.remoteId = creationResponse.guid
 		}
 
-		log.info(`All ${videoFiles.length} videos are now in sync!`)
+		log.debug(`All ${videoFiles.length} videos are now in sync!`)
 	}
 
-	log.verbose = initialVerbosity
 	return syncReport
+}
+
+/**
+ * Show a spinner on stderr while a long-running remote operation completes
+ */
+async function withSpinner<T>(promise: Promise<T>, text: string): Promise<T> {
+	return oraPromise(promise, { stream: process.stderr, text })
 }

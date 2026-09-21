@@ -35,6 +35,10 @@ vi.mock('ora', () => ({
 	oraPromise: vi.fn(async (promise: Promise<unknown>) => promise),
 }))
 
+// Silence library logs during tests
+const { setLogger } = await import('../src/lib/log')
+setLogger()
+
 const { syncVideoInDirectory } = await import('../src/lib/sync')
 
 // Hash mock — sync.ts treats hashes as strings

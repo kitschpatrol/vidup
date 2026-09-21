@@ -116,7 +116,7 @@ vidup sync <directory> [options]
 | `--strip-metadata`  | Remove all metadata from the video files before uploading them to the streaming service. Warning: This will modify local videos in-place. | `boolean`                        | `false` |
 | `--dry-run`<br>`-d` | Perform a dry run without making any changes. Useful for testing and debugging. Pairs well with the `--json` command.                     | `boolean`                        | `false` |
 | `--json`            | Output the sync report as JSON.                                                                                                           | `boolean`                        | `false` |
-| `--verbose`         | Enable verbose logging. All verbose logs and prefixed with their log level and are printed to `stderr` for ease of redirection.           | `boolean`                        | `false` |
+| `--verbose`         | Enable verbose logging. All verbose logs are prefixed with their log level and are printed to `stderr` for ease of redirection.           | `boolean`                        | `false` |
 | `--help`<br>`-h`    | Show help                                                                                                                                 | `boolean`                        |         |
 | `--version`<br>`-v` | Show version number                                                                                                                       | `boolean`                        |         |
 
@@ -165,7 +165,6 @@ async function syncVideoInDirectory(
     }
     dryRun?: boolean // Defaults to false
     service: Service
-    verbose?: boolean // Defaults to false
   },
 ): Promise<SyncReport>
 ```
@@ -173,11 +172,10 @@ async function syncVideoInDirectory(
 A `stripVideoMetadataInDirectory` function is also exported, which will remove metadata from all videos in the target directory. It returns a list of video filepaths with metadata:
 
 ```ts
-export async function stripVideoMetadataInFiles(
+async function stripVideoMetadataInDirectory(
   directory: string,
   options: {
     dryRun?: boolean // Defaults to false
-    verbose?: boolean // Defaults to false
   },
 ): Promise<string[]>
 ```
@@ -197,6 +195,21 @@ const syncReport = await syncVideoInDirectory(process.cwd(), {
 
 console.log(JSON.stringify(syncReport, undefined, 2))
 ```
+
+#### Logging
+
+Vidup logs progress at the `debug` level and problems at the `warn` and `error` levels via [lognow](https://github.com/kitschpatrol/lognow). By default, only warnings and errors are shown. To see everything, or to route the library's logs into your own logging system, inject a logger:
+
+```ts
+import { setLogger } from 'vidup'
+
+// Send all library logs to the console
+setLogger(console)
+
+// Or pass any LogLayer instance
+```
+
+Call `setLogger()` with no argument to silence the library entirely.
 
 ## Background
 
