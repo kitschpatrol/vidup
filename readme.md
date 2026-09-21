@@ -51,7 +51,13 @@ Or, install locally to access the CLI commands in a single project or to import 
 npm install vidup
 ```
 
-Or, install globally for access across your system:
+Or, install globally for access across your system with either Homebrew or npm:
+
+```sh
+brew install kitschpatrol/tap/vidup
+```
+
+_or_
 
 ```sh
 npm install --global vidup

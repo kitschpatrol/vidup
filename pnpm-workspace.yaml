@@ -4,6 +4,7 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - yargs@18.2.0
   - lognow@0.8.4
+  - brewpub@0.3.0
 publicHoistPattern:
   - '@kitschpatrol/repo-config'
   - '@kitschpatrol/typescript-config'
