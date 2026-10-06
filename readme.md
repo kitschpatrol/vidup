@@ -9,6 +9,7 @@
 [![NPM Package vidup](https://img.shields.io/npm/v/vidup.svg)](https://www.npmjs.com/package/vidup)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
 [![CI](https://github.com/kitschpatrol/vidup/actions/workflows/ci.yml/badge.svg)](https://github.com/kitschpatrol/vidup/actions/workflows/ci.yml)
+[![Homebrew](https://img.shields.io/badge/Homebrew-kitschpatrol%2Ftap%2Fvidup-FBB040?logo=homebrew&logoColor=white)](https://github.com/kitschpatrol/homebrew-tap/blob/HEAD/Formula/vidup.rb)
 
 <!-- /badges -->
 
@@ -31,37 +32,53 @@ Currently, only Bunny.net's [Bunny Stream](https://bunny.net/stream/) service is
 
 ## Getting started
 
+<!-- dependencies -->
+
 ### Dependencies
 
-The vidup CLI tool requires Node 20.9.0+. The exported APIs are ESM-only and share the Node 20.9.0+ requirement. Vidup is implemented in TypeScript and bundles type definitions.
+- [Node.js](https://nodejs.org/) 24.16.0 or newer (specifically `^24.16.0 || >=26.3.0`)
+
+<!-- /dependencies -->
+
+The exported APIs are ESM-only. Vidup is implemented in TypeScript and bundles type definitions.
 
 A [Bunny Stream](https://bunny.net/stream/) account, API key, and library ID are required.
 
+<!-- install -->
+
 ### Installation
 
-Invoke directly:
+There are several ways to install vidup depending on how you're planning to use it:
+
+#### CLI
+
+Run it once without installing:
 
 ```sh
 npx vidup
 ```
 
-Or, install locally to access the CLI commands in a single project or to import the provided TypeScript APIs:
-
-```sh
-npm install vidup
-```
-
-Or, install globally for access across your system with either Homebrew or npm:
+Or install it globally with Homebrew:
 
 ```sh
 brew install kitschpatrol/tap/vidup
 ```
 
-_or_
+Or install it globally with npm:
 
 ```sh
 npm install --global vidup
 ```
+
+#### Library
+
+Add it to your project to import the TypeScript API. This also puts the `vidup` CLI on your project's path:
+
+```sh
+npm install vidup
+```
+
+<!-- /install -->
 
 ## Usage
 
@@ -76,11 +93,13 @@ Vidup tracks the content hash of each local video. If you replace a local video 
 
 Any videos present on the remote service that aren't matched to a video file in the local folder **will be deleted from the remote service**.
 
-### CLI
+### CLI usage
 
 <!-- cli-help -->
 
-#### Command: `vidup`
+#### Commands
+
+##### Command: `vidup`
 
 Run a vidup command.
 
@@ -100,7 +119,7 @@ vidup [command]
 
 _See the sections below for more information on each subcommand._
 
-#### Subcommand: `vidup sync`
+##### Subcommand: `vidup sync`
 
 Synchronize a remote video streaming service to mirror the contents of a local directory. Warning: This command will irrevocably delete remote videos that are not present in the local directory.
 
@@ -153,7 +172,7 @@ vidup . --json --dry-run --service bunny --key <BUNNY_API_KEY> --library <BUNNY_
 
 The JSON version of the output provides some extra info.
 
-### Library
+### Library usage
 
 #### API
 
