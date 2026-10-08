@@ -64,7 +64,7 @@
 	},
 	"devDependencies": {
 		"@arethetypeswrong/core": "^0.18.5",
-		"@kitschpatrol/shared-config": "^8.12.1",
+		"@kitschpatrol/shared-config": "^8.13.1",
 		"@types/node": "~24.13.4",
 		"brewpub": "^0.5.0",
 		"bumpp": "^12.3.0",
