@@ -86,7 +86,7 @@ Vidup treats local videos' file names as keys, and will look for a file with the
 
 Any video files present in the local folder that aren't matched to a video on the remote service will be uploaded.
 
-If you change the name of a local video file, the remote video with the previous name will be deleted, and a new remote video (with a ne GUID) will be created.
+If you change the name of a local video file, the remote video with the previous name will be deleted, and a new remote video (with a new GUID) will be created.
 
 Vidup tracks the content hash of each local video. If you replace a local video file with another of the same name, the change in content will be detected and the remote video will be updated.
 (_Note that this is currently equivalent to deleting / creating a new remote video since Bunny.net doesn't support in-place video updates. The GUID will change, so you'll need to update any embeds accordingly._)
@@ -199,7 +199,7 @@ A `stripVideoMetadataInDirectory` function is also exported, which will remove m
 ```ts
 async function stripVideoMetadataInDirectory(
   directory: string,
-  options: {
+  options?: {
     dryRun?: boolean // Defaults to false
   },
 ): Promise<string[]>

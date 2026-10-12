@@ -6,6 +6,7 @@
 		"bunnycdn-stream",
 		"bunnycdn",
 		"cli",
+		"homebrew-formula",
 		"npm-package",
 		"sync",
 		"upload",
@@ -52,10 +53,10 @@
 	"dependencies": {
 		"@types/yargs": "^17.0.35",
 		"bunnycdn-stream": "^2.5.5",
-		"execa": "^10.0.1",
+		"execa": "^10.1.0",
 		"ffmpeg-static": "^5.3.0",
 		"hasha": "^7.0.0",
-		"lognow": "^0.8.4",
+		"lognow": "^0.8.5",
 		"lowdb": "^7.0.1",
 		"ora": "^9.4.1",
 		"pretty-ms": "^9.3.1",
@@ -65,18 +66,18 @@
 	"devDependencies": {
 		"@arethetypeswrong/core": "^0.18.5",
 		"@kitschpatrol/shared-config": "^8.13.1",
-		"@types/node": "~24.13.4",
+		"@types/node": "~24.13.6",
 		"brewpub": "^0.5.0",
 		"bumpp": "^12.3.0",
-		"mdat-plugin-cli-help": "^3.4.0",
+		"mdat-plugin-cli-help": "^3.4.1",
 		"publint": "^0.3.25",
 		"shx": "^0.4.0",
-		"skills": "^1.7.0",
-		"tsdown": "^0.23.0",
-		"typescript": "^6.0.3",
+		"skills": "^1.7.2",
+		"tsdown": "^0.23.1",
+		"typescript": "~6.0.3",
 		"vitest": "^5.0.3"
 	},
-	"packageManager": "pnpm@12.9.1",
+	"packageManager": "pnpm@12.11.2",
 	"engines": {
 		"node": "^24.16.0 || >=26.3.0"
 	}
