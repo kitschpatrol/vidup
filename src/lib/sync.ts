@@ -9,16 +9,6 @@ import { getVideosInDirectory } from './utilities/video'
 
 export type Service = 'bunny' | 'cloudflare' | 'mux'
 
-type State = {
-	lastRun?: Date
-	lastUpdate?: Date
-	syncState: Array<{
-		filename: string
-		localHash: string
-		remoteHash: Partial<Record<Service, string | undefined>>
-	}>
-}
-
 export type SyncReport = Array<{
 	action: 'Create' | 'Delete' | 'None' | 'Update'
 	localFile?: string
@@ -47,6 +37,15 @@ export async function syncVideoInDirectory(
 	directory: string,
 	options: SyncOptions,
 ): Promise<SyncReport> {
+	type State = {
+		lastRun?: Date
+		lastUpdate?: Date
+		syncState: Array<{
+			filename: string
+			localHash: string
+			remoteHash: Partial<Record<Service, string | undefined>>
+		}>
+	}
 	const { credentials, dryRun = false, service } = options
 
 	const syncReport: SyncReport = []
