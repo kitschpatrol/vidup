@@ -1,6 +1,8 @@
 allowBuilds:
   ffmpeg-static: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@kitschpatrol/chagent@0.4.0'
 peerDependencyRules:
   allowedVersions:
     # Remove once the installed version declares ESLint 10 support.
